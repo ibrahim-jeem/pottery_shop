@@ -79,6 +79,8 @@ function card(p) {
     esc(p.name) +
     '" loading="lazy"><span class="product-tag">' +
     esc(p.category) +
+    '</span><span class="product-price-tag">' +
+    (p.price ? money(p.price) : "Price TBA") +
     '</span></div><div class="product-info"><div><h3>' +
     esc(p.name) +
     "</h3><p>" +
@@ -87,9 +89,7 @@ function card(p) {
     p.id +
     '">Add to bag →</button> <button class="product-cta" data-enquire="' +
     p.id +
-    '">Ask a question</button></div><span class="product-price">' +
-    (p.price ? money(p.price) : "Price on request") +
-    "</span></div></article>"
+    '">Ask a question</button></div></div></article>"
   );
 }
 function render(target, cat = "all", q = "") {
