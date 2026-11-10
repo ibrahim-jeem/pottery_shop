@@ -279,18 +279,25 @@ blockquote em {
   letter-spacing: 3px;
   font-weight: 600;
 }
-.ticker div {
-  min-width: max-content;
-  animation: marquee 28s linear infinite;
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+  will-change: transform;
+}
+.ticker-group {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  white-space: nowrap;
 }
 .ticker span {
   padding: 0 28px;
   color: #e8b99e;
 }
 @keyframes marquee {
-  to {
-    transform: translateX(-35%);
-  }
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 .section {
   padding: 90px clamp(22px, 7vw, 104px);
@@ -1206,3 +1213,20 @@ blockquote em {
 .studio-audio-player button:hover { background:var(--clay); }
 .studio-audio-player span { color:var(--muted); font-size:11px; }
 @media (max-width:650px) { .site-logo { max-width:142px; max-height:46px; } }
+
+
+/* Product price label */
+.product-price-tag {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  padding: 7px 10px;
+  background: var(--ink);
+  color: var(--white);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
