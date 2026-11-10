@@ -23,6 +23,9 @@
     const sync=playing=>{button.classList.toggle("is-playing",playing);button.setAttribute("aria-pressed",String(playing));button.setAttribute("aria-label",playing?"Pause background music":"Play background music");label.textContent=playing?"Pause music":"Play music";};
     const start=async()=>{try{await audio.play();sync(true);}catch(_){sync(false);label.textContent="Play music";button.title="Your browser blocked automatic audio. Tap to start.";}}
     button.addEventListener("click",async()=>{if(audio.paused)await start();else{audio.pause();sync(false);}});
+    const retryAutoplay=()=>{if(audio.paused)start();};
+    window.addEventListener("pointerdown",retryAutoplay,{once:true,passive:true});
+    window.addEventListener("keydown",retryAutoplay,{once:true});
     audio.addEventListener("play",()=>sync(true));audio.addEventListener("pause",()=>sync(false));
     // Attempt autoplay on every customer-facing page. Browsers may block audible autoplay until a visitor interacts.
     start();

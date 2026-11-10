@@ -1280,7 +1280,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .volume-control{display:flex;align-items:center;gap:14px;min-width:220px}
 .volume-control input{accent-color:var(--clay);width:170px}
 .volume-control output{min-width:36px;font-size:12px;font-weight:700}
-.admin-row{grid-template-columns:68px minmax(150px,1fr) minmax(100px,150px) auto}
+.admin-row{grid-template-columns:68px minmax(150px,1fr) minmax(100px,150px) auto auto}
 .admin-price-input{width:100%;min-width:0;padding:9px 10px;border:1px solid var(--line);background:#fffefa;font:12px var(--sans)}
 .admin-price-cell{display:flex;flex-direction:column;gap:4px}
 .admin-price-cell small{color:var(--muted);font-size:9px}
@@ -1307,7 +1307,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
  .admin-settings{align-items:flex-start;flex-direction:column}
  .volume-control{width:100%}
  .volume-control input{flex:1}
- .admin-row{grid-template-columns:54px minmax(0,1fr) 90px}
- .admin-price-cell{grid-column:2 / 3}
- .admin-row button{grid-column:3;grid-row:1 / span 2}
+ .admin-row{grid-template-columns:54px minmax(0,1fr) auto;grid-template-rows:auto auto auto}
+ .admin-row img{grid-column:1;grid-row:1 / span 3}
+ .admin-price-cell{grid-column:2;grid-row:2}
+ .admin-row [data-save-price]{grid-column:3;grid-row:1}
+ .admin-row [data-edit]{grid-column:3;grid-row:2}
 }
