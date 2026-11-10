@@ -18,10 +18,10 @@
     const audio=document.createElement("audio");audio.id="site-background-audio";audio.loop=true;audio.preload="auto";
     const source=document.createElement("source");source.src="img/Artisan_Hands.mp3";source.type="audio/mpeg";audio.appendChild(source);document.body.appendChild(audio);
     const saved=localStorage.getItem(VOLUME_KEY);audio.volume=clampVolume(saved===null?.08:saved);
-    const button=document.createElement("button");button.type="button";button.className="music-control";button.setAttribute("aria-label","Play background music");button.setAttribute("aria-pressed","false");button.innerHTML='<span class="music-state"></span><span class="music-label">Play music</span>';document.body.appendChild(button);
-    const label=button.querySelector(".music-label");
-    const sync=playing=>{button.classList.toggle("is-playing",playing);button.setAttribute("aria-pressed",String(playing));button.setAttribute("aria-label",playing?"Pause background music":"Play background music");label.textContent=playing?"Pause music":"Play music";};
-    const start=async()=>{try{await audio.play();sync(true);}catch(_){sync(false);label.textContent="Play music";button.title="Your browser blocked automatic audio. Tap to start.";}}
+    const button=document.createElement("button");button.type="button";button.className="music-control";button.setAttribute("aria-label","Play background music");button.setAttribute("aria-pressed","false");button.innerHTML='<span class="music-symbol" aria-hidden="true">▶</span>';document.body.appendChild(button);
+    const symbol=button.querySelector(".music-symbol");
+    const sync=playing=>{button.classList.toggle("is-playing",playing);button.setAttribute("aria-pressed",String(playing));button.setAttribute("aria-label",playing?"Pause background music":"Play background music");symbol.textContent=playing?"Ⅱ":"▶";button.title=playing?"Pause background music":"Play background music";};
+    const start=async()=>{try{await audio.play();sync(true);}catch(_){sync(false);button.title="Your browser blocked automatic audio. Tap to start.";}}
     button.addEventListener("click",async()=>{if(audio.paused)await start();else{audio.pause();sync(false);}});
     const retryAutoplay=()=>{if(audio.paused)start();};
     window.addEventListener("pointerdown",retryAutoplay,{once:true,passive:true});
