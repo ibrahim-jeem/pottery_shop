@@ -1313,3 +1313,95 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
  .admin-row [data-save-price]{grid-column:3;grid-row:1}
  .admin-row [data-edit]{grid-column:3;grid-row:2}
 }
+
+
+/* Interaction fixes: preserve the custom cursor, but keep it above overlays and controls. */
+.cursor-dot,
+.cursor-ring {
+  z-index: 10050 !important;
+  pointer-events: none !important;
+}
+.cart-overlay { z-index: 1000; }
+.cart-panel { position: relative; z-index: 1; }
+.music-control {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 1200;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #d7a58a;
+  border-radius: 50%;
+  background: #282720;
+  color: #fff8f0;
+  box-shadow: 0 8px 26px #0003;
+  cursor: pointer;
+  transition: transform .2s ease, background .2s ease;
+}
+.music-control:hover { transform: translateY(-2px); background: #a65d42; }
+.music-control .music-symbol { display: block; font: 700 17px/1 Arial, sans-serif; letter-spacing: -2px; }
+.music-control:focus-visible { outline: 2px solid var(--clay2); outline-offset: 4px; }
+
+/* Each ticker copy occupies one full viewport, so the loop joins cleanly. */
+.ticker-track { width: max-content; }
+.ticker-group {
+  flex: 0 0 100vw;
+  min-width: 100vw;
+  justify-content: space-around;
+  padding: 0 2vw;
+}
+@keyframes marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+/* Shared map and contact placeholders on every page footer. */
+.footer-contact-grid {
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: clamp(28px, 6vw, 82px);
+  padding-bottom: 42px;
+  margin-bottom: 38px;
+  border-bottom: 1px solid #49463d;
+}
+.footer-kicker {
+  color: #d7a58a;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+.footer-contact-grid h3 {
+  margin: 10px 0 16px;
+  color: #eee5d9;
+  font: 500 26px/1.2 var(--serif);
+}
+.footer-contact-grid p {
+  max-width: 420px;
+  color: #bdb5a8;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.map-placeholder {
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+  border: 1px dashed #807568;
+  background: linear-gradient(135deg, #35342c, #2b2a24);
+  color: #eee5d9;
+  text-align: center;
+}
+.map-placeholder-pin { color: #d7a58a; font-size: 30px; line-height: 1; }
+.map-placeholder strong { font: 500 20px var(--serif); }
+.map-placeholder small, .footer-placeholder-note { color: #bdb5a8; font-size: 11px; }
+.footer-contact > a { color: #e5b79d; font-size: 12px; border-bottom: 1px solid #806b5c; padding-bottom: 4px; }
+@media (max-width: 650px) {
+  .music-control { right: 16px; bottom: 16px; width: 44px; height: 44px; }
+  .footer-contact-grid { grid-template-columns: 1fr; gap: 28px; }
+  .ticker-group { padding-inline: 0; }
+}
