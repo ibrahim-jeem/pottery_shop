@@ -46,12 +46,12 @@
     button.className="music-control";
     button.setAttribute("aria-label","Play background music");
     button.setAttribute("aria-pressed","false");
-    button.innerHTML='<span class="music-symbol" aria-hidden="true">▶</span>';
+    button.innerHTML='<svg class="music-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.8c0-.78.86-1.25 1.52-.83l9.2 5.95a1.28 1.28 0 0 1 0 2.16l-9.2 5.95A1 1 0 0 1 8 18.2V5.8Z" fill="currentColor"/></svg>';
     document.body.append(audio,button);
 
     const savedVolume=localStorage.getItem(VOLUME_KEY);
     audio.volume=clampVolume(savedVolume===null?.08:savedVolume);
-    const symbol=button.querySelector(".music-symbol");
+    
     const savePosition=() => writeSession({
       trackIndex,
       currentTime: Number.isFinite(audio.currentTime) ? audio.currentTime : savedTime,
@@ -61,7 +61,7 @@
       button.classList.toggle("is-playing",playing);
       button.setAttribute("aria-pressed",String(playing));
       button.setAttribute("aria-label",playing?"Pause background music":"Play background music");
-      symbol.textContent=playing?"Ⅱ":"▶";
+      button.innerHTML=playing?'<svg class="music-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 5.5h3.5v13H7zM13.5 5.5H17v13h-3.5z" fill="currentColor"/></svg>':'<svg class="music-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.8c0-.78.86-1.25 1.52-.83l9.2 5.95a1.28 1.28 0 0 1 0 2.16l-9.2 5.95A1 1 0 0 1 8 18.2V5.8Z" fill="currentColor"/></svg>';
       button.title=playing?"Pause background music":"Play background music";
     };
     const loadTrack=(index,position=0,autoplay=true)=>{
