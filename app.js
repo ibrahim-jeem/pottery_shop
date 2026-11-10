@@ -108,33 +108,41 @@
     });
   }
   function admin() {
-    const root = $("#admin-content"); if (!root) return;
-    let tab = "products";
-    function draw() {
-      if (tab === "products") {
-        root.innerHTML = '<div class="admin-actions"><p>Update product names, prices, stock and visibility. Changes are saved only in this browser.</p><button class="btn btn-dark" id="new-product" type="button">+ Add product</button></div><div class="admin-list">' + products.map(p => '<div class="admin-row"><img src="' + esc(p.image) + '" alt=""><div><strong>' + esc(p.name) + '</strong><small>' + (p.price == null || p.price === "" ? "Price not set" : money(p.price)) + " · " + esc(p.category) + " · " + (p.published ? "Published" : "Hidden") + '</small></div><button type="button" data-edit="' + esc(p.id) + '">Edit</button></div>').join("") + '</div><div id="edit-slot"></div>';
-        $("#new-product").addEventListener("click", () => edit(null));
-        $$("[data-edit]").forEach(button => button.addEventListener("click", () => edit(button.dataset.edit)));
-      } else {
-        const items = read(tab === "orders" ? KEY.orders : KEY.enquiries, []);
-        root.innerHTML = items.length ? '<div class="admin-list">' + items.map(item => '<article class="admin-edit"><strong>' + esc(item.id || item.name || "Enquiry") + '</strong><small>' + new Date(item.date).toLocaleString() + '</small><p>' + esc(item.customer?.name || item.name || "") + " · " + esc(item.customer?.phone || item.phone || "") + '</p><p>' + esc(item.customer?.address || item.message || "") + '</p>' + (item.total !== undefined ? '<b>' + (item.total === null ? "Quote required" : money(item.total)) + " · " + esc(item.status) + '</b><p>Payment: ' + esc(item.customer?.payment || "Not specified") + " · " + esc(item.paymentStatus || "Not paid") + '</p>' : "") + '</article>').join("") + '</div>' : '<div class="empty-state">No ' + tab + ' saved in this browser yet.</div>';
+    const root=$("#admin-content"); if(!root)return;
+    let tab="products";
+    function draw(){
+      if(tab==="products"){
+        root.innerHTML='<div class="admin-actions"><p>Set the actual BDT selling price for each product, then save that row.</p><button class="btn btn-dark" id="new-product" type="button">+ Add product</button></div><div class="admin-list">'+products.map(p=>'<div class="admin-row" data-product-row="'+esc(p.id)+'"><img src="'+esc(p.image)+'" alt=""><div><strong>'+esc(p.name)+'</strong><small>'+esc(p.category)+' · '+(p.published?"Visible in shop":"Hidden from shop")+'</small></div><div class="admin-price-cell"><input class="admin-price-input" type="number" min="0" step="1" inputmode="numeric" aria-label="Price in BDT for '+esc(p.name)+'" placeholder="Price in ৳" value="'+(p.price==null?"":esc(p.price))+'"><small>'+(p.price==null?"No price set":"Current: "+money(p.price))+'</small></div><button type="button" data-save-price="'+esc(p.id)+'">Save price</button><button type="button" data-edit="'+esc(p.id)+'">Details</button></div>').join("")+'</div><div id="edit-slot"></div>';
+        $("#new-product").addEventListener("click",()=>edit(null));
+        $$("[data-save-price]",root).forEach(button=>button.addEventListener("click",()=>{
+          const p=byId(button.dataset.savePrice),row=button.closest("[data-product-row]"),input=$(".admin-price-input",row);
+          if(!p||input.value.trim()===""||!Number.isFinite(Number(input.value))||Number(input.value)<0){toast("Enter a valid price in BDT.");input.focus();return;}
+          p.price=Number(input.value);saveProducts();const small=$(".admin-price-cell small",row);small.textContent="Current: "+money(p.price);toast("Price saved on this device.");
+        }));
+        $$("[data-edit]",root).forEach(button=>button.addEventListener("click",()=>edit(button.dataset.edit)));
+      }else{
+        const items=read(tab==="orders"?KEY.orders:KEY.enquiries,[]);
+        root.innerHTML=items.length?'<div class="admin-list">'+items.map(item=>'<article class="admin-edit"><strong>'+esc(item.id||item.name||"Enquiry")+'</strong><small>'+new Date(item.date).toLocaleString()+'</small><p>'+esc(item.customer?.name||item.name||"")+' · '+esc(item.customer?.phone||item.phone||"")+'</p><p>'+esc(item.customer?.address||item.message||"")+'</p>'+(item.total!==undefined?'<b>'+(item.total===null?"Quote required":money(item.total))+' · '+esc(item.status)+'</b><p>Payment: '+esc(item.customer?.payment||"Not specified")+' · '+esc(item.paymentStatus||"Not paid")+'</p>':'')+'</article>').join("")+'</div>':'<div class="empty-state">No '+tab+' saved in this browser yet.</div>';
       }
     }
-    function edit(id) {
-      const existing = id ? byId(id) : null;
-      const p = existing || { id: "piece-" + Date.now(), name: "", category: "decor", description: "", image: "img/pottery_shop_1.jpg", price: "", stock: "", published: false };
-      $("#edit-slot").innerHTML = '<form class="admin-edit" id="product-edit"><h3>' + (existing ? "Edit product" : "Add a product") + '</h3><div class="form-row"><label>Product name<input name="name" required maxlength="80" value="' + esc(p.name) + '"></label><label>Category<select name="category"><option value="tableware">Tableware</option><option value="decor">Decor</option><option value="planters">Planters</option></select></label></div><div class="form-row"><label>Price (BDT)<input name="price" type="number" min="0" step="1" value="' + esc(p.price == null ? "" : p.price) + '" placeholder="Leave blank for quote"></label><label>Stock quantity<input name="stock" type="number" min="0" step="1" value="' + esc(p.stock == null ? "" : p.stock) + '" placeholder="Optional"></label></div><label>Image path<input name="image" required value="' + esc(p.image) + '" placeholder="img/your-product.jpg"></label><label>Description<textarea name="description" rows="3">' + esc(p.description) + '</textarea></label><label class="check-line"><input name="published" type="checkbox" ' + (p.published ? "checked" : "") + '> Show in shop</label><div class="admin-actions"><button class="btn btn-dark" type="submit">Save product</button><button class="small-btn" type="button" id="cancel-edit">Cancel</button>' + (existing ? '<button class="small-btn" type="button" id="delete-product">Delete product</button>' : "") + '</div></form>';
-      const form = $("#product-edit"); form.elements.category.value = p.category;
-      $("#cancel-edit").addEventListener("click", () => { $("#edit-slot").innerHTML = ""; });
-      $("#delete-product")?.addEventListener("click", () => { if (confirm("Delete this product from this browser catalogue?")) { products = products.filter(x => x.id !== p.id); cart = cart.filter(x => x.id !== p.id); saveProducts(); saveCart(); draw(); } });
-      form.addEventListener("submit", event => {
-        event.preventDefault(); const data = Object.fromEntries(new FormData(form));
-        const updated = { ...p, name: data.name.trim(), category: data.category, price: data.price === "" ? null : Number(data.price), stock: data.stock === "" ? null : Number(data.stock), image: data.image.trim(), description: data.description.trim(), published: form.elements.published.checked };
-        if (existing) Object.assign(existing, updated); else products.unshift(updated);
-        saveProducts(); draw(); toast("Product saved in this browser.");
+    function edit(id){
+      const existing=id?byId(id):null;
+      const p=existing||{id:"piece-"+Date.now(),name:"",category:"decor",description:"",image:"img/pottery_shop_1.jpg",price:"",stock:"",published:false};
+      $("#edit-slot").innerHTML='<form class="admin-edit" id="product-edit"><h3>'+(existing?"Edit product details":"Add a product")+'</h3><div class="form-row"><label>Product name<input name="name" required maxlength="80" value="'+esc(p.name)+'"></label><label>Category<select name="category"><option value="tableware">Tableware</option><option value="decor">Decor</option><option value="planters">Planters</option></select></label></div><div class="form-row"><label>Price (BDT)<input name="price" type="number" min="0" step="1" inputmode="numeric" value="'+(p.price==null?"":esc(p.price))+'" placeholder="Leave blank for quote"></label><label>Stock quantity<input name="stock" type="number" min="0" step="1" value="'+(p.stock==null?"":esc(p.stock))+'" placeholder="Optional"></label></div><label>Image path<input name="image" required value="'+esc(p.image)+'"></label><label>Description<textarea name="description" rows="3">'+esc(p.description)+'</textarea></label><label class="check-line"><input name="published" type="checkbox" '+(p.published?"checked":"")+'> Show in shop</label><div class="admin-actions"><button class="btn btn-dark" type="submit">Save product details</button><button class="small-btn" type="button" id="cancel-edit">Cancel</button>'+(existing?'<button class="small-btn" type="button" id="delete-product">Delete product</button>':'')+'</div></form>';
+      const form=$("#product-edit");form.elements.category.value=p.category;
+      $("#cancel-edit").addEventListener("click",()=>{$("#edit-slot").innerHTML="";});
+      $("#delete-product")?.addEventListener("click",()=>{if(confirm("Delete this product from this browser catalogue?")){products=products.filter(x=>x.id!==p.id);cart=cart.filter(x=>x.id!==p.id);saveProducts();saveCart();draw();}});
+      form.addEventListener("submit",event=>{
+        event.preventDefault();
+        const data=new FormData(form);
+        const price=data.get("price"),stock=data.get("stock");
+        const updated={...p,name:String(data.get("name")).trim(),category:String(data.get("category")),price:price===""?null:Number(price),stock:stock===""?null:Number(stock),image:String(data.get("image")).trim(),description:String(data.get("description")).trim(),published:form.elements.published.checked};
+        if(!updated.name||!updated.image||((price!=="")&&(!Number.isFinite(updated.price)||updated.price<0))){toast("Please check the product details and price.");return;}
+        if(existing)Object.assign(existing,updated);else products.unshift(updated);
+        saveProducts();draw();toast("Product details saved on this device.");
       });
     }
-    $$("[data-admin-tab]").forEach(button => button.addEventListener("click", () => { tab = button.dataset.adminTab; $$(".admin-tab").forEach(x => x.classList.toggle("active", x === button)); draw(); }));
+    $$("[data-admin-tab]").forEach(button=>button.addEventListener("click",()=>{tab=button.dataset.adminTab;$$(".admin-tab").forEach(x=>x.classList.toggle("active",x===button));draw();}));
     draw();
   }
   function cursor() {
