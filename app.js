@@ -149,9 +149,22 @@
     if (!window.matchMedia("(hover:hover) and (pointer:fine)").matches || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const dot = $(".cursor-dot"), ring = $(".cursor-ring"); if (!dot || !ring) return;
     document.body.classList.add("custom-cursor"); let x = 0, y = 0, rx = 0, ry = 0;
-    document.addEventListener("pointermove", event => { x = event.clientX; y = event.clientY; dot.style.left = x + "px"; dot.style.top = y + "px"; });
-    const tick = () => { rx += (x - rx) * .14; ry += (y - ry) * .14; ring.style.left = rx + "px"; ring.style.top = ry + "px"; requestAnimationFrame(tick); }; tick();
-    document.addEventListener("pointerover", event => ring.classList.toggle("hover", !!event.target.closest("a,button,input,select,textarea")));
+    // Keep the same dot-and-ring effect active above every interactive layer, including the cart and music control.
+    const position = event => {
+      x = event.clientX; y = event.clientY;
+      dot.style.left = x + "px"; dot.style.top = y + "px";
+    };
+    document.addEventListener("pointermove", position, { passive: true });
+    const tick = () => {
+      rx += (x - rx) * .14; ry += (y - ry) * .14;
+      ring.style.left = rx + "px"; ring.style.top = ry + "px";
+      requestAnimationFrame(tick);
+    };
+    tick();
+    document.addEventListener("pointerover", event => {
+      const target = event.target instanceof Element ? event.target : null;
+      ring.classList.toggle("hover", !!target?.closest("a,button,input,select,textarea,[role='button']"));
+    });
   }
   function slowLoader() {
     const el = $("#slow-loader"); if (!el) return;
