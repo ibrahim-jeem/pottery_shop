@@ -1434,14 +1434,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .ticker-track {
   display: flex;
   width: max-content;
-  min-width: 200%;
   animation: ticker-seamless 28s linear infinite;
   will-change: transform;
 }
 .ticker-group {
-  flex: 0 0 50vw;
-  width: 50vw;
-  min-width: 50vw;
+  flex: 0 0 100vw;
+  width: 100vw;
+  min-width: 100vw;
   justify-content: space-evenly;
   white-space: nowrap;
 }
@@ -1450,6 +1449,5 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
   to { transform: translate3d(-50%, 0, 0); }
 }
 @media (max-width: 650px) {
-  .ticker-track { min-width: 200%; }
-  .ticker-group { flex-basis: 50vw; width: 50vw; min-width: 50vw; }
+  .ticker-group { flex-basis: 100vw; width: 100vw; min-width: 100vw; }
 }
