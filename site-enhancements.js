@@ -15,19 +15,95 @@
       }
       return;
     }
-    const audio=document.createElement("audio");audio.id="site-background-audio";audio.loop=true;audio.preload="auto";
-    const source=document.createElement("source");source.src="img/Artisan_Hands.mp3";source.type="audio/mpeg";audio.appendChild(source);document.body.appendChild(audio);
-    const saved=localStorage.getItem(VOLUME_KEY);audio.volume=clampVolume(saved===null?.08:saved);
-    const button=document.createElement("button");button.type="button";button.className="music-control";button.setAttribute("aria-label","Play background music");button.setAttribute("aria-pressed","false");button.innerHTML='<span class="music-symbol" aria-hidden="true">▶</span>';document.body.appendChild(button);
+    /*
+     * Add future client-approved tracks to this playlist in the order they should play.
+     * Keep each file inside /img and use its exact filename.
+     */
+    const PLAYLIST = [
+      { src: "img/Artisan_Hands.mp3", type: "audio/mpeg" }
+      // Example for later: { src: "img/Next_Track.mp3", type: "audio/mpeg" }
+    ];
+    const SESSION_KEY = "ps_music_session_v2";
+    const readSession = () => {
+      try { return JSON.parse(sessionStorage.getItem(SESSION_KEY) || "{}"); }
+      catch (_) { return {}; }
+    };
+    const writeSession = state => {
+      try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(state)); } catch (_) {}
+    };
+    const previous = readSession();
+    let trackIndex = Number.isInteger(previous.trackIndex) && previous.trackIndex >= 0 && previous.trackIndex < PLAYLIST.length ? previous.trackIndex : 0;
+    let shouldPlay = previous.wasPlaying !== false;
+    let savedTime = Number.isFinite(previous.currentTime) && previous.currentTime > 0 ? previous.currentTime : 0;
+
+    const audio=document.createElement("audio");
+    audio.id="site-background-audio";
+    audio.preload="auto";
+    audio.loop=false;
+    audio.autoplay=true;
+    const button=document.createElement("button");
+    button.type="button";
+    button.className="music-control";
+    button.setAttribute("aria-label","Play background music");
+    button.setAttribute("aria-pressed","false");
+    button.innerHTML='<span class="music-symbol" aria-hidden="true">▶</span>';
+    document.body.append(audio,button);
+
+    const savedVolume=localStorage.getItem(VOLUME_KEY);
+    audio.volume=clampVolume(savedVolume===null?.08:savedVolume);
     const symbol=button.querySelector(".music-symbol");
-    const sync=playing=>{button.classList.toggle("is-playing",playing);button.setAttribute("aria-pressed",String(playing));button.setAttribute("aria-label",playing?"Pause background music":"Play background music");symbol.textContent=playing?"Ⅱ":"▶";button.title=playing?"Pause background music":"Play background music";};
-    const start=async()=>{try{await audio.play();sync(true);}catch(_){sync(false);button.title="Your browser blocked automatic audio. Tap to start.";}}
-    button.addEventListener("click",async()=>{if(audio.paused)await start();else{audio.pause();sync(false);}});
-    const retryAutoplay=()=>{if(audio.paused)start();};
+    const savePosition=() => writeSession({
+      trackIndex,
+      currentTime: Number.isFinite(audio.currentTime) ? audio.currentTime : savedTime,
+      wasPlaying: !audio.paused && !audio.ended
+    });
+    const sync=playing=>{
+      button.classList.toggle("is-playing",playing);
+      button.setAttribute("aria-pressed",String(playing));
+      button.setAttribute("aria-label",playing?"Pause background music":"Play background music");
+      symbol.textContent=playing?"Ⅱ":"▶";
+      button.title=playing?"Pause background music":"Play background music";
+    };
+    const loadTrack=(index,position=0,autoplay=true)=>{
+      trackIndex=(index+PLAYLIST.length)%PLAYLIST.length;
+      const track=PLAYLIST[trackIndex];
+      audio.src=track.src;
+      audio.load();
+      audio.addEventListener("loadedmetadata",function restore(){
+        audio.removeEventListener("loadedmetadata",restore);
+        if(Number.isFinite(position)&&position>0&&Number.isFinite(audio.duration)){
+          try { audio.currentTime=Math.min(position,Math.max(0,audio.duration-0.25)); } catch (_) {}
+        }
+        if(autoplay&&shouldPlay) start();
+        else sync(false);
+      });
+    };
+    const start=async()=>{
+      shouldPlay=true;
+      try { await audio.play(); sync(true); savePosition(); }
+      catch(_) { sync(false); button.title="Tap to start background music"; savePosition(); }
+    };
+    button.addEventListener("click",()=>{
+      if(audio.paused){shouldPlay=true;start();}
+      else{shouldPlay=false;audio.pause();sync(false);savePosition();}
+    });
+    audio.addEventListener("play",()=>{shouldPlay=true;sync(true);savePosition();});
+    audio.addEventListener("pause",()=>{sync(false);savePosition();});
+    audio.addEventListener("timeupdate",savePosition);
+    audio.addEventListener("ended",()=>{
+      const next=(trackIndex+1)%PLAYLIST.length;
+      savedTime=0;
+      shouldPlay=true;
+      loadTrack(next,0,true);
+    });
+    // Preserve the same track and playback position as the visitor moves between pages.
+    window.addEventListener("pagehide",savePosition);
+    window.addEventListener("beforeunload",savePosition);
+    document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")savePosition();});
+    const retryAutoplay=()=>{if(shouldPlay&&audio.paused)start();};
     window.addEventListener("pointerdown",retryAutoplay,{once:true,passive:true});
     window.addEventListener("keydown",retryAutoplay,{once:true});
-    audio.addEventListener("play",()=>sync(true));audio.addEventListener("pause",()=>sync(false));
-    // Attempt autoplay on every customer-facing page. Browsers may block audible autoplay until a visitor interacts.
-    start();
+    loadTrack(trackIndex,savedTime,shouldPlay);
+    sync(false);
   });
 })();
