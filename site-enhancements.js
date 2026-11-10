@@ -20,14 +20,14 @@
     const toggle = document.getElementById("studio-audio-toggle");
     const status = document.getElementById("studio-audio-status");
     if (audio && toggle) {
-      audio.volume = 0.16;
+      audio.volume = 0.08;
       toggle.addEventListener("click", async () => {
         if (audio.paused) {
           try {
             await audio.play();
             toggle.textContent = "Pause music";
             toggle.setAttribute("aria-pressed", "true");
-            if (status) status.textContent = "Playing softly · 16% volume";
+            if (status) status.textContent = "Playing softly · 8% volume";
           } catch (error) {
             if (status) status.textContent = "Playback was blocked. Please press Play again.";
           }
