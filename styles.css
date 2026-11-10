@@ -1405,3 +1405,51 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
   .footer-contact-grid { grid-template-columns: 1fr; gap: 28px; }
   .ticker-group { padding-inline: 0; }
 }
+
+
+/* Final interaction-layer fixes: keep the existing custom cursor effect unchanged. */
+@media (hover: hover) and (pointer: fine) {
+  body.custom-cursor .cursor-dot,
+  body.custom-cursor .cursor-ring {
+    opacity: 1 !important;
+    z-index: 2147483647 !important;
+    pointer-events: none !important;
+    visibility: visible !important;
+  }
+  body.custom-cursor,
+  body.custom-cursor a,
+  body.custom-cursor button,
+  body.custom-cursor input,
+  body.custom-cursor select,
+  body.custom-cursor textarea {
+    cursor: none !important;
+  }
+}
+#ui-root { isolation: auto; }
+.cart-overlay { z-index: 10000 !important; }
+.cart-overlay.open { pointer-events: auto; }
+.cart-panel { pointer-events: auto; position: relative; z-index: 1; }
+.music-control { z-index: 10010 !important; }
+.ticker { width: 100%; overflow: hidden; }
+.ticker-track {
+  display: flex;
+  width: max-content;
+  min-width: 200%;
+  animation: ticker-seamless 28s linear infinite;
+  will-change: transform;
+}
+.ticker-group {
+  flex: 0 0 50vw;
+  width: 50vw;
+  min-width: 50vw;
+  justify-content: space-evenly;
+  white-space: nowrap;
+}
+@keyframes ticker-seamless {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+@media (max-width: 650px) {
+  .ticker-track { min-width: 200%; }
+  .ticker-group { flex-basis: 50vw; width: 50vw; min-width: 50vw; }
+}
