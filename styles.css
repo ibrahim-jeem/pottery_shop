@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap");
+
 :root {
   --paper: #f5f0e8;
   --paper2: #ebe3d7;
@@ -7,8 +9,8 @@
   --clay2: #d7a58a;
   --line: #d9d0c3;
   --white: #fffdf8;
-  --serif: "Playfair Display", Georgia, serif;
-  --sans: "DM Sans", Arial, sans-serif;
+  --serif: "Lora", Georgia, serif;
+  --sans: "Source Sans 3", "Segoe UI", Arial, sans-serif;
 }
 * {
   box-sizing: border-box;
@@ -1450,4 +1452,89 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 }
 @media (max-width: 650px) {
   .ticker-group { flex-basis: 100vw; width: 100vw; min-width: 100vw; }
+}
+
+
+/* Mobile browser consistency and warmer typography */
+button, input, select, textarea {
+  font-family: var(--sans);
+}
+.cart-button,
+.menu-toggle,
+.music-control {
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  text-decoration: none;
+  text-shadow: none;
+}
+.cart-button {
+  color: var(--clay) !important;
+  background: transparent !important;
+  border: 1px solid var(--line) !important;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.cart-button:visited,
+.cart-button:active,
+.cart-button:focus {
+  color: var(--clay) !important;
+}
+.cart-count {
+  color: #fffaf4 !important;
+  background: var(--clay) !important;
+  font-family: var(--sans);
+  font-weight: 700;
+}
+.menu-toggle {
+  color: var(--ink) !important;
+  background: transparent !important;
+  border: 0 !important;
+  padding: 8px 4px;
+  line-height: 1;
+  font-size: 25px;
+}
+.menu-toggle:active,
+.menu-toggle:focus {
+  color: var(--clay) !important;
+  outline-offset: 3px;
+}
+.music-control {
+  color: #fff8f0 !important;
+  background: var(--clay) !important;
+  border: 1px solid #b97558 !important;
+  padding: 0 !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  touch-action: manipulation;
+}
+.music-control:hover,
+.music-control:active {
+  color: #fff8f0 !important;
+  background: #8f4d38 !important;
+}
+.music-control .music-icon {
+  display: block;
+  width: 19px;
+  height: 19px;
+  flex: 0 0 19px;
+}
+@media (max-width: 650px) {
+  .cart-button {
+    min-height: 42px;
+    padding: 8px 13px;
+    font-size: 14px;
+  }
+  .cart-count {
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
+    margin-left: 7px;
+  }
+  .music-control {
+    width: 46px;
+    height: 46px;
+    right: 16px;
+    bottom: 16px;
+  }
 }
