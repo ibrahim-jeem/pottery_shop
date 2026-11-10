@@ -1,69 +1,25 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#f5f0e8" />
-    <title>Checkout — Pottery Shop</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body data-page="checkout">
-    <div id="site-header"></div>
-    <main>
-      <section class="page-hero">
-        <span class="eyebrow">YOUR ORDER</span>
-        <h1>Almost <em>yours.</em></h1>
-        <p>Review your items and leave your delivery details.</p>
-      </section>
-      <section class="section checkout-layout">
-        <div id="checkout-items" class="checkout-items"></div>
-        <form id="checkout-form" class="form-card">
-          <h2>Delivery details</h2>
-          <label>Full name<input name="name" required /></label
-          ><label
-            >Phone number<input
-              name="phone"
-              required
-              placeholder="+880" /></label
-          ><label>Email (optional)<input name="email" type="email" /></label
-          ><label
-            >Full delivery address<textarea
-              name="address"
-              rows="3"
-              required
-            ></textarea>
-          </label>
-          <div class="payment-note">
-            <strong>Payment setup</strong>
-            <p>
-              Cash on delivery can be selected for order requests. bKash, Nagad,
-              Rocket and card payments will appear after a merchant gateway
-              (SSLCOMMERZ or aamarPay) is configured on a secure backend.
-            </p>
-          </div>
-          <label class="check-line"
-            ><input type="checkbox" name="cod" checked /> Request cash on
-            delivery (confirmation required)</label
-          ><button class="btn btn-dark" type="submit">
-            Place order request <span>↗</span>
-          </button>
-          <p class="form-note">
-            Demo only: no payment is collected and this browser stores the order
-            locally.
-          </p>
-          <div id="checkout-feedback" class="feedback" role="status"></div>
-        </form>
-      </section>
-    </main>
-    <div id="site-footer"></div>
-    <div id="ui-root"></div>
-    <script src="app.js" defer></script>
-    <script src="site-enhancements.js" defer></script>
-  </body>
-</html>
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f5f0e8">
+<meta name="description" content="Review your pottery order and request delivery in Bangladesh.">
+<title>Checkout — Pottery Shop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="checkout">
+<div id="site-header"></div><main>
+<section class="page-hero"><span class="eyebrow">YOUR ORDER</span><h1>Almost <em>yours.</em></h1><p>Review your pieces and share where you'd like them delivered.</p></section>
+<section class="section checkout-layout"><div><h2>Order summary</h2><div id="checkout-items" class="checkout-items"></div></div>
+<form id="checkout-form" class="form-card"><h2>Delivery details</h2>
+<label>Full name<input name="name" autocomplete="name" required></label>
+<label>Phone number<input name="phone" type="tel" autocomplete="tel" inputmode="tel" required placeholder="+880 1XXXXXXXXX"></label>
+<label>Email (optional)<input name="email" type="email" autocomplete="email"></label>
+<label>Full delivery address<textarea name="address" rows="3" autocomplete="street-address" required placeholder="House, road, area, district"></textarea></label>
+<label>Preferred payment method<select name="payment" id="payment-method" required><option value="cod">Cash on delivery (request)</option><option value="bkash">bKash</option><option value="nagad">Nagad</option><option value="rocket">Rocket</option><option value="card">Debit / credit card</option></select></label>
+<div class="payment-note"><strong>Payment information</strong><p id="payment-explainer">Cash on delivery is a request and will be confirmed by the shop.</p><p>bKash, Nagad, Rocket and card checkout are shown as preferences only. A secure SSLCOMMERZ or aamarPay merchant integration is not connected in this preview. Never send money to an unverified number.</p></div>
+<label>Order note (optional)<textarea name="note" rows="2" placeholder="Delivery instructions or questions"></textarea></label>
+<button class="btn btn-dark" type="submit">Send order request <span>↗</span></button>
+<p class="form-note">Preview only: the order is saved in this browser and is not sent to the shop. No payment is collected.</p><div id="checkout-feedback" class="feedback" role="status"></div>
+</form></section></main><div id="site-footer"></div><div id="ui-root"></div><script src="app.js" defer></script>
+</body></html>

@@ -1230,3 +1230,19 @@ blockquote em {
   line-height: 1.2;
   white-space: nowrap;
 }
+
+
+/* UX refinements */
+.toast{position:fixed;left:50%;bottom:26px;z-index:120;transform:translate(-50%,14px);opacity:0;pointer-events:none;background:#282720;color:#fff8f0;padding:12px 18px;font-size:12px;box-shadow:0 8px 28px #0002;transition:opacity .22s,transform .22s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.admin-actions{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin:12px 0 22px}
+.admin-actions p{font-size:12px;color:var(--muted);margin:0}
+.admin-edit h3{font-family:var(--serif);font-size:24px;font-weight:500;margin:0 0 20px}
+.cart-button{cursor:pointer}
+.cart-overlay{z-index:110}
+.cart-overlay.open{display:flex}
+.site-header{z-index:40}
+.product-info p{line-height:1.65;max-width:36ch}
+.product-cta{cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--clay);outline-offset:3px}
+@media(max-width:650px){.admin-actions{align-items:stretch;flex-direction:column}.admin-actions .btn{width:100%;text-align:center}}
