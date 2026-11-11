@@ -1729,3 +1729,33 @@ button, input, select, textarea {
   .featured-slide h3 { font-size: 16px; }
   .featured-slide-actions { gap: 8px; }
 }
+
+/* Studio edit: continuous ticker-style product showcase. */
+.featured-shop { overflow: hidden; }
+.featured-carousel { overflow: hidden; }
+.featured-carousel-track {
+  display: flex; width: max-content; gap: 0; overflow: visible; padding: 0; margin: 0;
+  scroll-snap-type: none; animation: featuredMarquee 42s linear infinite; will-change: transform;
+}
+.featured-carousel-track:hover,.featured-carousel-track:focus-within,.featured-carousel-track.is-paused { animation-play-state: paused; }
+.featured-marquee-group { display: flex; flex: 0 0 auto; align-items: stretch; gap: 18px; padding-right: 18px; }
+.featured-slide { flex: 0 0 270px; width: 270px; min-width: 270px; background: var(--white); }
+.featured-slide-image { display: block; position: relative; aspect-ratio: 1 / 1.08; overflow: hidden; background: var(--paper2); }
+.featured-slide-image img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.featured-product-tag { position: absolute; top: 12px; left: 12px; padding: 7px 10px; color: #fffaf4; background: #34332b; font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; }
+.featured-product-tag.offer { background: var(--clay); }
+.featured-slide-price { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; }
+.featured-old-price { color: var(--muted); text-decoration: line-through; font-size: 11px; }
+.featured-offer-price { color: var(--clay); font-size: 15px; }
+.featured-price-note { display: block; color: var(--muted); font-size: 10px; margin-top: -6px; }
+.featured-carousel-controls { justify-content: flex-start; }
+.featured-carousel-controls button { min-width: 86px; width: auto; height: 36px; padding: 0 14px; border-radius: 99px; font-size: 10px; letter-spacing: .5px; text-transform: uppercase; }
+.featured-empty { padding: 30px 0; color: var(--muted); }
+@keyframes featuredMarquee { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+@media (max-width: 650px) {
+  .featured-slide { flex-basis: 230px; width: 230px; min-width: 230px; }
+  .featured-marquee-group { gap: 12px; padding-right: 12px; }
+  .featured-shop .section-head { display: block; }
+  .featured-shop .section-head > a { margin-top: 14px; display: inline-flex; }
+}
+@media (prefers-reduced-motion: reduce) { .featured-carousel-track { animation: none; transform: none; overflow-x: auto; } }
