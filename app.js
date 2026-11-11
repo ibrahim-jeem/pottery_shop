@@ -75,52 +75,49 @@
   function homeProductCarousel() {
     const track = $("#featured-carousel-track");
     const controls = $("#featured-carousel-controls");
-    if (!track || !controls) return;
-    const featured = products.filter(p => p.published).slice(0, 8);
-    if (!featured.length) {
-      track.innerHTML = '<div class="empty-state">New pieces are being added to the collection.</div>';
-      controls.hidden = true;
+    if (!track) return;
+    const bestSellers = products.filter(p => p.published && p.bestSeller === true);
+    const eligibleOffers = products.filter(p => p.published && p.bestSeller !== true);
+    const offerKey = "ps_featured_offer_v1";
+    const today = new Date().toISOString().slice(0, 10);
+    const savedOffer = read(offerKey, null);
+    let offer = savedOffer && savedOffer.date === today ? byId(savedOffer.id) : null;
+    if (!offer || !offer.published || offer.bestSeller) {
+      offer = eligibleOffers.length ? eligibleOffers[Math.floor(Math.random() * eligibleOffers.length)] : null;
+      if (offer) write(offerKey, { id: offer.id, date: today });
+      else localStorage.removeItem(offerKey);
+    }
+    const cards = [
+      ...bestSellers.map(product => ({ product, tag: "Best Sold", kind: "best" })),
+      ...(offer ? [{ product: offer, tag: "Special Offer", kind: "offer" }] : [])
+    ];
+    if (!cards.length) {
+      track.innerHTML = '<div class="featured-empty">Our studio favourites are being selected. Check back soon.</div>';
+      if (controls) controls.hidden = true;
       return;
     }
-    const priceText = p => p.price === null || p.price === "" || p.price === undefined ? "Price on request" : money(p.price);
-    track.innerHTML = featured.map(p => '<article class="featured-slide"><div class="featured-slide-image"><img src="' + esc(p.image) + '" alt="' + esc(p.name) + '" loading="lazy"></div><div class="featured-slide-copy"><span class="featured-slide-meta">' + esc(p.category) + '</span><h3>' + esc(p.name) + '</h3><p class="featured-slide-price">' + priceText(p) + '</p><div class="featured-slide-actions"><button class="product-cta" type="button" data-featured-add="' + esc(p.id) + '">Add to bag →</button><a class="product-cta" href="shop.html">View collection</a></div></div></article>').join("");
-    $("[data-featured-add]", track).forEach(button => button.addEventListener("click", () => addToCart(button.dataset.featuredAdd)));
-
-    const step = () => {
-      const first = track.querySelector(".featured-slide");
-      if (!first) return track.clientWidth;
-      const styles = getComputedStyle(track);
-      return first.getBoundingClientRect().width + (parseFloat(styles.columnGap || styles.gap) || 0);
+    const cardHtml = item => {
+      const p = item.product;
+      const hasOffer = item.kind === "offer" && p.offerPrice !== null && p.offerPrice !== "" && Number.isFinite(Number(p.offerPrice));
+      const price = hasOffer
+        ? '<span class="featured-old-price">' + (p.price == null ? "" : money(p.price)) + '</span><strong class="featured-offer-price">' + money(p.offerPrice) + '</strong>'
+        : (p.price == null || p.price === "" ? '<span>Price to be confirmed</span>' : '<strong>' + money(p.price) + '</strong>');
+      const offerNote = item.kind === "offer" && !hasOffer ? '<small class="featured-price-note">Offer price to be set by the shop</small>' : "";
+      return '<article class="featured-slide"><a class="featured-slide-image" href="shop.html" tabindex="-1"><img src="' + esc(p.image) + '" alt="' + esc(p.name) + '" loading="lazy"><span class="featured-product-tag ' + item.kind + '">' + item.tag + '</span></a><div class="featured-slide-copy"><span class="featured-slide-meta">' + esc(p.category) + '</span><h3>' + esc(p.name) + '</h3><p class="featured-slide-price">' + price + '</p>' + offerNote + '<div class="featured-slide-actions"><button class="product-cta" type="button" data-featured-add="' + esc(p.id) + '">Add to bag →</button><a class="product-cta" href="shop.html">View piece</a></div></div></article>';
     };
-    const move = direction => {
-      const max = Math.max(0, track.scrollWidth - track.clientWidth);
-      if (max < 4) return;
-      if (direction > 0 && track.scrollLeft >= max - 12) {
-        track.scrollTo({ left: 0, behavior: "smooth" });
-      } else if (direction < 0 && track.scrollLeft <= 12) {
-        track.scrollTo({ left: max, behavior: "smooth" });
-      } else {
-        track.scrollBy({ left: direction * step(), behavior: "smooth" });
-      }
-    };
-    controls.querySelector("[data-carousel-prev]")?.addEventListener("click", () => move(-1));
-    controls.querySelector("[data-carousel-next]")?.addEventListener("click", () => move(1));
-
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!reducedMotion && featured.length > 1) {
-      let timer = null;
-      const stop = () => { if (timer) { clearInterval(timer); timer = null; } };
-      const resume = () => {
-        if (!timer && !document.hidden) timer = window.setInterval(() => move(1), 4200);
-      };
-      track.addEventListener("pointerenter", stop);
-      track.addEventListener("pointerleave", resume);
-      track.addEventListener("focusin", stop);
-      track.addEventListener("focusout", resume);
-      track.addEventListener("touchstart", stop, { passive: true });
-      track.addEventListener("touchend", () => window.setTimeout(resume, 1800), { passive: true });
-      document.addEventListener("visibilitychange", () => document.hidden ? stop() : resume());
-      resume();
+    const sequence = cards.map(cardHtml).join("");
+    const repeatCount = Math.max(2, Math.ceil((window.innerWidth * 2) / (cards.length * 290)) + 1);
+    const group = '<div class="featured-marquee-group">' + Array.from({ length: repeatCount }, () => sequence).join("") + '</div>';
+    track.innerHTML = group + group;
+    track.querySelectorAll("[data-featured-add]").forEach(button => button.addEventListener("click", () => addToCart(button.dataset.featuredAdd)));
+    if (controls) {
+      controls.hidden = false;
+      const toggle = controls.querySelector("[data-carousel-toggle]");
+      if (toggle) toggle.addEventListener("click", () => {
+        const paused = track.classList.toggle("is-paused");
+        toggle.textContent = paused ? "Play" : "Pause";
+        toggle.setAttribute("aria-pressed", String(paused));
+      });
     }
   }
   function shop() {
@@ -179,7 +176,7 @@
     function edit(id){
       const existing=id?byId(id):null;
       const p=existing||{id:"piece-"+Date.now(),name:"",category:"decor",description:"",image:"img/pottery_shop_1.jpg",price:"",stock:"",published:false};
-      $("#edit-slot").innerHTML='<form class="admin-edit" id="product-edit"><h3>'+(existing?"Edit product details":"Add a product")+'</h3><div class="form-row"><label>Product name<input name="name" required maxlength="80" value="'+esc(p.name)+'"></label><label>Category<select name="category"><option value="tableware">Tableware</option><option value="decor">Decor</option><option value="planters">Planters</option></select></label></div><div class="form-row"><label>Price (BDT)<input name="price" type="number" min="0" step="1" inputmode="numeric" value="'+(p.price==null?"":esc(p.price))+'" placeholder="Leave blank for quote"></label><label>Stock quantity<input name="stock" type="number" min="0" step="1" value="'+(p.stock==null?"":esc(p.stock))+'" placeholder="Optional"></label></div><label>Image path<input name="image" required value="'+esc(p.image)+'"></label><label>Description<textarea name="description" rows="3">'+esc(p.description)+'</textarea></label><label class="check-line"><input name="published" type="checkbox" '+(p.published?"checked":"")+'> Show in shop</label><div class="admin-actions"><button class="btn btn-dark" type="submit">Save product details</button><button class="small-btn" type="button" id="cancel-edit">Cancel</button>'+(existing?'<button class="small-btn" type="button" id="delete-product">Delete product</button>':'')+'</div></form>';
+      $("#edit-slot").innerHTML='<form class="admin-edit" id="product-edit"><h3>'+(existing?"Edit product details":"Add a product")+'</h3><div class="form-row"><label>Product name<input name="name" required maxlength="80" value="'+esc(p.name)+'"></label><label>Category<select name="category"><option value="tableware">Tableware</option><option value="decor">Decor</option><option value="planters">Planters</option></select></label></div><div class="form-row"><label>Price (BDT)<input name="price" type="number" min="0" step="1" inputmode="numeric" value="'+(p.price==null?"":esc(p.price))+'" placeholder="Leave blank for quote"></label><label>Stock quantity<input name="stock" type="number" min="0" step="1" value="'+(p.stock==null?"":esc(p.stock))+'" placeholder="Optional"></label></div><div class="form-row"><label>Offer price (BDT)<input name="offerPrice" type="number" min="0" step="1" inputmode="numeric" value="'+(p.offerPrice==null?"":esc(p.offerPrice))+'" placeholder="Optional special price"></label><label class="check-line"><input name="bestSeller" type="checkbox" '+(p.bestSeller?"checked":"")+'> Mark as Best Sold</label></div><label>Image path<input name="image" required value="'+esc(p.image)+'"></label><label>Description<textarea name="description" rows="3">'+esc(p.description)+'</textarea></label><label class="check-line"><input name="published" type="checkbox" '+(p.published?"checked":"")+'> Show in shop</label><div class="admin-actions"><button class="btn btn-dark" type="submit">Save product details</button><button class="small-btn" type="button" id="cancel-edit">Cancel</button>'+(existing?'<button class="small-btn" type="button" id="delete-product">Delete product</button>':'')+'</div></form>';
       const form=$("#product-edit");form.elements.category.value=p.category;
       $("#cancel-edit").addEventListener("click",()=>{$("#edit-slot").innerHTML="";});
       $("#delete-product")?.addEventListener("click",()=>{if(confirm("Delete this product from this browser catalogue?")){products=products.filter(x=>x.id!==p.id);cart=cart.filter(x=>x.id!==p.id);saveProducts();saveCart();draw();}});
@@ -187,8 +184,8 @@
         event.preventDefault();
         const data=new FormData(form);
         const price=data.get("price"),stock=data.get("stock");
-        const updated={...p,name:String(data.get("name")).trim(),category:String(data.get("category")),price:price===""?null:Number(price),stock:stock===""?null:Number(stock),image:String(data.get("image")).trim(),description:String(data.get("description")).trim(),published:form.elements.published.checked};
-        if(!updated.name||!updated.image||((price!=="")&&(!Number.isFinite(updated.price)||updated.price<0))){toast("Please check the product details and price.");return;}
+        const updated={...p,name:String(data.get("name")).trim(),category:String(data.get("category")),price:price===""?null:Number(price),stock:stock===""?null:Number(stock),image:String(data.get("image")).trim(),description:String(data.get("description")).trim(),published:form.elements.published.checked,bestSeller:form.elements.bestSeller.checked,offerPrice:data.get("offerPrice")===""?null:Number(data.get("offerPrice"))};
+        if(!updated.name||!updated.image||((price!=="")&&(!Number.isFinite(updated.price)||updated.price<0))||(updated.offerPrice!==null&&(!Number.isFinite(updated.offerPrice)||updated.offerPrice<0))){toast("Please check the product details and price.");return;}
         if(existing)Object.assign(existing,updated);else products.unshift(updated);
         saveProducts();draw();toast("Product details saved on this device.");
       });
