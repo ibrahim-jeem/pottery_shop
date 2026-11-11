@@ -85,28 +85,42 @@
     const priceText = p => p.price === null || p.price === "" || p.price === undefined ? "Price on request" : money(p.price);
     track.innerHTML = featured.map(p => '<article class="featured-slide"><div class="featured-slide-image"><img src="' + esc(p.image) + '" alt="' + esc(p.name) + '" loading="lazy"></div><div class="featured-slide-copy"><span class="featured-slide-meta">' + esc(p.category) + '</span><h3>' + esc(p.name) + '</h3><p class="featured-slide-price">' + priceText(p) + '</p><div class="featured-slide-actions"><button class="product-cta" type="button" data-featured-add="' + esc(p.id) + '">Add to bag →</button><a class="product-cta" href="shop.html">View collection</a></div></div></article>').join("");
     $("[data-featured-add]", track).forEach(button => button.addEventListener("click", () => addToCart(button.dataset.featuredAdd)));
+
     const step = () => {
       const first = track.querySelector(".featured-slide");
-      return first ? first.getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || 0) : track.clientWidth;
+      if (!first) return track.clientWidth;
+      const styles = getComputedStyle(track);
+      return first.getBoundingClientRect().width + (parseFloat(styles.columnGap || styles.gap) || 0);
     };
     const move = direction => {
-      const max = track.scrollWidth - track.clientWidth;
-      if (direction > 0 && track.scrollLeft >= max - 8) track.scrollTo({ left: 0, behavior: "smooth" });
-      else if (direction < 0 && track.scrollLeft <= 8) track.scrollTo({ left: max, behavior: "smooth" });
-      else track.scrollBy({ left: direction * step(), behavior: "smooth" });
+      const max = Math.max(0, track.scrollWidth - track.clientWidth);
+      if (max < 4) return;
+      if (direction > 0 && track.scrollLeft >= max - 12) {
+        track.scrollTo({ left: 0, behavior: "smooth" });
+      } else if (direction < 0 && track.scrollLeft <= 12) {
+        track.scrollTo({ left: max, behavior: "smooth" });
+      } else {
+        track.scrollBy({ left: direction * step(), behavior: "smooth" });
+      }
     };
     controls.querySelector("[data-carousel-prev]")?.addEventListener("click", () => move(-1));
     controls.querySelector("[data-carousel-next]")?.addEventListener("click", () => move(1));
+
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!reducedMotion && featured.length > 1) {
-      let timer = window.setInterval(() => move(1), 4800);
+      let timer = null;
       const stop = () => { if (timer) { clearInterval(timer); timer = null; } };
-      const resume = () => { if (!timer && !document.hidden) timer = window.setInterval(() => move(1), 4800); };
+      const resume = () => {
+        if (!timer && !document.hidden) timer = window.setInterval(() => move(1), 4200);
+      };
       track.addEventListener("pointerenter", stop);
       track.addEventListener("pointerleave", resume);
       track.addEventListener("focusin", stop);
       track.addEventListener("focusout", resume);
+      track.addEventListener("touchstart", stop, { passive: true });
+      track.addEventListener("touchend", () => window.setTimeout(resume, 1800), { passive: true });
       document.addEventListener("visibilitychange", () => document.hidden ? stop() : resume());
+      resume();
     }
   }
   function shop() {
