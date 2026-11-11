@@ -34,14 +34,15 @@
     };
     const previous = readSession();
     let trackIndex = Number.isInteger(previous.trackIndex) && previous.trackIndex >= 0 && previous.trackIndex < PLAYLIST.length ? previous.trackIndex : 0;
-    let shouldPlay = localStorage.getItem(INTENT_KEY) !== "paused" && previous.wasPlaying !== false;
+    const storedIntent = localStorage.getItem(INTENT_KEY);
+    let shouldPlay = storedIntent === "paused" ? false : storedIntent === "playing" ? true : previous.wasPlaying !== false;
     let savedTime = Number.isFinite(previous.currentTime) && previous.currentTime > 0 ? previous.currentTime : 0;
 
     const audio=document.createElement("audio");
     audio.id="site-background-audio";
     audio.preload="auto";
     audio.loop=false;
-    audio.autoplay=true;
+    audio.autoplay=false;
     const button=document.createElement("button");
     button.type="button";
     button.className="music-control";
@@ -88,7 +89,11 @@
       if(audio.paused){shouldPlay=true;localStorage.setItem(INTENT_KEY,"playing");start();}
       else{shouldPlay=false;localStorage.setItem(INTENT_KEY,"paused");audio.pause();sync(false);savePosition();}
     });
-    audio.addEventListener("play",()=>{shouldPlay=true;sync(true);savePosition();});
+    audio.addEventListener("play",()=>{
+      // A previously saved explicit pause always wins, including delayed autoplay/play events.
+      if(localStorage.getItem(INTENT_KEY)==="paused" || !shouldPlay) { audio.pause(); sync(false); savePosition(); return; }
+      sync(true); savePosition();
+    });
     audio.addEventListener("pause",()=>{sync(false);savePosition();});
     audio.addEventListener("timeupdate",savePosition);
     audio.addEventListener("ended",()=>{
