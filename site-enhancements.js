@@ -20,7 +20,8 @@
      * Keep each file inside /img and use its exact filename.
      */
     const PLAYLIST = [
-      { src: "img/Artisan_Hands.mp3", type: "audio/mpeg" }
+      { src: "img/Artisan_Hands.mp3", type: "audio/mpeg" },
+      { src: "img/Clay_&_Serenity.mp3", type: "audio/mpeg" }
       // Example for later: { src: "img/Next_Track.mp3", type: "audio/mpeg" }
     ];
     const SESSION_KEY = "ps_music_session_v2";
