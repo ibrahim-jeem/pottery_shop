@@ -24,6 +24,7 @@
       // Example for later: { src: "img/Next_Track.mp3", type: "audio/mpeg" }
     ];
     const SESSION_KEY = "ps_music_session_v2";
+    const INTENT_KEY = "ps_music_user_intent_v1";
     const readSession = () => {
       try { return JSON.parse(sessionStorage.getItem(SESSION_KEY) || "{}"); }
       catch (_) { return {}; }
@@ -33,7 +34,7 @@
     };
     const previous = readSession();
     let trackIndex = Number.isInteger(previous.trackIndex) && previous.trackIndex >= 0 && previous.trackIndex < PLAYLIST.length ? previous.trackIndex : 0;
-    let shouldPlay = previous.wasPlaying !== false;
+    let shouldPlay = localStorage.getItem(INTENT_KEY) !== "paused" && previous.wasPlaying !== false;
     let savedTime = Number.isFinite(previous.currentTime) && previous.currentTime > 0 ? previous.currentTime : 0;
 
     const audio=document.createElement("audio");
@@ -55,7 +56,7 @@
     const savePosition=() => writeSession({
       trackIndex,
       currentTime: Number.isFinite(audio.currentTime) ? audio.currentTime : savedTime,
-      wasPlaying: !audio.paused && !audio.ended
+      wasPlaying: shouldPlay && !audio.paused && !audio.ended
     });
     const sync=playing=>{
       button.classList.toggle("is-playing",playing);
@@ -84,8 +85,8 @@
       catch(_) { sync(false); button.title="Tap to start background music"; savePosition(); }
     };
     button.addEventListener("click",()=>{
-      if(audio.paused){shouldPlay=true;start();}
-      else{shouldPlay=false;audio.pause();sync(false);savePosition();}
+      if(audio.paused){shouldPlay=true;localStorage.setItem(INTENT_KEY,"playing");start();}
+      else{shouldPlay=false;localStorage.setItem(INTENT_KEY,"paused");audio.pause();sync(false);savePosition();}
     });
     audio.addEventListener("play",()=>{shouldPlay=true;sync(true);savePosition();});
     audio.addEventListener("pause",()=>{sync(false);savePosition();});
