@@ -1690,3 +1690,42 @@ button, input, select, textarea {
 @media (prefers-reduced-motion: reduce) {
   .featured-carousel-track { scroll-behavior: auto; }
 }
+
+
+/* Homepage product carousel: compact cards with dependable horizontal movement. */
+.featured-carousel-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 29%);
+  gap: 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 2px;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+  cursor: grab;
+}
+.featured-carousel-track:active { cursor: grabbing; }
+.featured-slide { min-width: 0; }
+.featured-slide-image { aspect-ratio: 1 / 1.08; }
+.featured-slide-image img { width: 100%; height: 100%; object-fit: cover; }
+.featured-slide-copy { padding: 14px 15px 16px; }
+.featured-slide h3 { font-size: 17px; }
+.featured-carousel-controls button { touch-action: manipulation; }
+@media (max-width: 900px) {
+  .featured-carousel-track { grid-auto-columns: minmax(0, 42%); gap: 16px; }
+}
+@media (max-width: 650px) {
+  .featured-carousel-track {
+    grid-auto-columns: 72%;
+    gap: 12px;
+    margin-right: -22px;
+    padding-right: 22px;
+    padding-bottom: 10px;
+  }
+  .featured-slide-image { aspect-ratio: 1 / 1.02; }
+  .featured-slide-copy { padding: 11px 12px 13px; }
+  .featured-slide h3 { font-size: 16px; }
+  .featured-slide-actions { gap: 8px; }
+}
