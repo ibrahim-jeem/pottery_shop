@@ -9,6 +9,10 @@ A responsive, multi-page storefront prototype for the Pottery Shop brand.
 - Wholesale: wholesale and custom-order enquiry form.
 - Checkout: cart review, Bangladesh delivery details and payment preference selection.
 - Studio workspace: local product editor, order-request list and wholesale enquiry list.
+- Policies: delivery, returns, privacy and terms. Draft wording with bracketed details the shop must confirm.
+
+## Background music
+Music autoplays on a visitor's first visit, where the browser allows it. Browsers block sound until the visitor interacts with the page, so playback then starts on their first click or key press. A pause is saved in that browser and stays paused on every page until the visitor presses play again.
 
 ## Run locally
 No build step is required. Open `index.html` or run `python -m http.server 8000` from the repository root.

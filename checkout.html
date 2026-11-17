@@ -5,7 +5,7 @@
 <meta name="description" content="Review your pottery order and request delivery in Bangladesh.">
 <title>Checkout — Pottery Shop</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css">
 </head>
 <body data-page="checkout">
 <div id="slow-loader" class="slow-loader" aria-hidden="true"><div class="loader-wheel"><div class="loader-clay"></div><div class="loader-vase"></div></div><p>Taking a little time to shape something lovely…</p></div><div id="site-header"></div><main>
@@ -13,7 +13,7 @@
 <section class="section checkout-layout"><div><h2>Order summary</h2><div id="checkout-items" class="checkout-items"></div></div>
 <form id="checkout-form" class="form-card"><h2>Delivery details</h2>
 <label>Full name<input name="name" autocomplete="name" required></label>
-<label>Phone number<input name="phone" type="tel" autocomplete="tel" inputmode="tel" required placeholder="+880 1XXXXXXXXX"></label>
+<label>Phone number<input name="phone" type="tel" autocomplete="tel" inputmode="tel" required placeholder="+880 1XXXXXXXXX" pattern="[+0-9 -]{11,20}" title="Bangladesh mobile number, for example 017XXXXXXXX"></label>
 <label>Email (optional)<input name="email" type="email" autocomplete="email"></label>
 <label>Full delivery address<textarea name="address" rows="3" autocomplete="street-address" required placeholder="House, road, area, district"></textarea></label>
 <label>Preferred payment method<select name="payment" id="payment-method" required><option value="cod">Cash on delivery (request)</option><option value="bkash">bKash</option><option value="nagad">Nagad</option><option value="rocket">Rocket</option><option value="card">Debit / credit card</option></select></label>

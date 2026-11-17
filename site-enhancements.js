@@ -36,12 +36,13 @@
     const previous = readSession();
     let trackIndex = Number.isInteger(previous.trackIndex) && previous.trackIndex >= 0 && previous.trackIndex < PLAYLIST.length ? previous.trackIndex : 0;
     const storedIntent = localStorage.getItem(INTENT_KEY);
+    // First visit: try to autoplay. A visitor's explicit pause is remembered in this browser and always wins.
     let shouldPlay = storedIntent === "paused" ? false : storedIntent === "playing" ? true : previous.wasPlaying !== false;
     let savedTime = Number.isFinite(previous.currentTime) && previous.currentTime > 0 ? previous.currentTime : 0;
 
     const audio=document.createElement("audio");
     audio.id="site-background-audio";
-    audio.preload="auto";
+    audio.preload="none";
     audio.loop=false;
     audio.autoplay=false;
     const button=document.createElement("button");
@@ -57,7 +58,7 @@
     
     const savePosition=() => writeSession({
       trackIndex,
-      currentTime: Number.isFinite(audio.currentTime) ? audio.currentTime : savedTime,
+      currentTime: audio.readyState > 0 && Number.isFinite(audio.currentTime) ? audio.currentTime : savedTime,
       wasPlaying: shouldPlay && !audio.paused && !audio.ended
     });
     const sync=playing=>{
@@ -67,18 +68,16 @@
       button.innerHTML=playing?'<svg class="music-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 5.5h3.5v13H7zM13.5 5.5H17v13h-3.5z" fill="currentColor"/></svg>':'<svg class="music-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.8c0-.78.86-1.25 1.52-.83l9.2 5.95a1.28 1.28 0 0 1 0 2.16l-9.2 5.95A1 1 0 0 1 8 18.2V5.8Z" fill="currentColor"/></svg>';
       button.title=playing?"Pause background music":"Play background music";
     };
-    const loadTrack=(index,position=0,autoplay=true)=>{
+    // Set the source only; the file downloads when playback starts, not on every page view.
+    const loadTrack=(index,position=0)=>{
       trackIndex=(index+PLAYLIST.length)%PLAYLIST.length;
-      const track=PLAYLIST[trackIndex];
-      audio.src=track.src;
-      audio.load();
+      audio.src=PLAYLIST[trackIndex].src;
+      audio.preload="none";
       audio.addEventListener("loadedmetadata",function restore(){
         audio.removeEventListener("loadedmetadata",restore);
         if(Number.isFinite(position)&&position>0&&Number.isFinite(audio.duration)){
           try { audio.currentTime=Math.min(position,Math.max(0,audio.duration-0.25)); } catch (_) {}
         }
-        if(autoplay&&shouldPlay) start();
-        else sync(false);
       });
     };
     const start=async()=>{
@@ -101,7 +100,13 @@
       const next=(trackIndex+1)%PLAYLIST.length;
       savedTime=0;
       shouldPlay=true;
-      loadTrack(next,0,true);
+      loadTrack(next,0);
+      start();
+    });
+    audio.addEventListener("error",()=>{
+      sync(false);
+      button.disabled=true;
+      button.title="Background music is unavailable right now.";
     });
     // Preserve the same track and playback position as the visitor moves between pages.
     window.addEventListener("pagehide",savePosition);
@@ -110,7 +115,8 @@
     const retryAutoplay=()=>{if(shouldPlay&&audio.paused)start();};
     window.addEventListener("pointerdown",retryAutoplay,{once:true,passive:true});
     window.addEventListener("keydown",retryAutoplay,{once:true});
-    loadTrack(trackIndex,savedTime,shouldPlay);
+    loadTrack(trackIndex,savedTime);
     sync(false);
+    if(shouldPlay) start();
   });
 })();
