@@ -17,9 +17,10 @@
 <label>Email (optional)<input name="email" type="email" autocomplete="email"></label>
 <label>Full delivery address<textarea name="address" rows="3" autocomplete="street-address" required placeholder="House, road, area, district"></textarea></label>
 <label>Preferred payment method<select name="payment" id="payment-method" required><option value="cod">Cash on delivery (request)</option><option value="bkash">bKash</option><option value="nagad">Nagad</option><option value="rocket">Rocket</option><option value="card">Debit / credit card</option></select></label>
-<div class="payment-note"><strong>Payment information</strong><p id="payment-explainer">Cash on delivery is a request and will be confirmed by the shop.</p><p>bKash, Nagad, Rocket and card checkout are shown as preferences only. A secure SSLCOMMERZ or aamarPay merchant integration is not connected in this preview. Never send money to an unverified number.</p></div>
+<div class="payment-note"><strong>Payment information</strong><p id="payment-explainer">Cash on delivery is a request and will be confirmed by the shop.</p><p>Online payment preferences are recorded with your request. Only use a payment method and account officially confirmed by the shop.</p></div>
+<div class="delivery-terms-accept"><a href="#" id="open-delivery-terms">Read delivery, damage &amp; warranty terms</a><label class="check-line"><input type="checkbox" name="acceptTerms" required> I have read and agree to the delivery terms.</label></div>
 <label>Order note (optional)<textarea name="note" rows="2" placeholder="Delivery instructions or questions"></textarea></label>
-<button class="btn btn-dark" type="submit">Send order request <span>↗</span></button>
-<p class="form-note">Preview only: the order is saved in this browser and is not sent to the shop. No payment is collected.</p><div id="checkout-feedback" class="feedback" role="status"></div>
+<button class="btn btn-dark" type="submit">Send order request <svg class="inline-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16 16 4M6 4h10v10"/></svg></button>
+<div id="checkout-feedback" class="feedback" role="status"></div>
 </form></section></main><div id="site-footer"></div><div id="ui-root"></div><script src="app.js" defer></script><script src="site-enhancements.js" defer></script>
 </body></html>
