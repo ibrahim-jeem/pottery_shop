@@ -109,12 +109,18 @@
       button.title="Background music is unavailable right now.";
     });
     // Preserve the same track and playback position as the visitor moves between pages.
-    window.addEventListener("pagehide",savePosition);
-    window.addEventListener("beforeunload",savePosition);
-    document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")savePosition();});
-    const retryAutoplay=()=>{if(shouldPlay&&audio.paused)start();};
-    window.addEventListener("pointerdown",retryAutoplay,{once:true,passive:true});
-    window.addEventListener("keydown",retryAutoplay,{once:true});
+    window.addEventListener("pagehide",()=>{savePosition();audio.pause();});
+    window.addEventListener("beforeunload",()=>{savePosition();audio.pause();});
+    document.addEventListener("visibilitychange",()=>{
+      if(document.visibilityState==="hidden"){
+        shouldPlay=false;
+        localStorage.setItem(INTENT_KEY,"paused");
+        savePosition();
+        audio.pause();
+        sync(false);
+      }
+    });
+    document.addEventListener("freeze",()=>{shouldPlay=false;localStorage.setItem(INTENT_KEY,"paused");savePosition();audio.pause();sync(false);});
     loadTrack(trackIndex,savedTime);
     sync(false);
     if(shouldPlay) start();
