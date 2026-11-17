@@ -1790,12 +1790,13 @@ button, input, select, textarea {
 .site-modal-backdrop { overflow-y:auto; -webkit-overflow-scrolling:touch; }
 .site-modal { margin:auto; }
 html { height:auto; min-height:100%; overflow-x:hidden; overflow-y:auto !important; -webkit-overflow-scrolling:touch; }
-body { min-height:100%; height:auto; overflow-x:hidden; overflow-y:auto !important; touch-action:pan-y; }
-main { min-height:1px; touch-action:pan-y; }
+body { min-height:100%; height:auto; overflow-x:hidden; overflow-y:auto !important; touch-action:auto; }
+main { min-height:1px; touch-action:auto; }
 @media(max-width:650px) {
   html,body { overflow-y:auto !important; }
   body { position:static !important; }
-  main,.section,.page-hero { touch-action:pan-y; }
+  main,.section,.page-hero { touch-action:auto; }
+  .orders-table-wrap { touch-action:pan-x pan-y; }
   .orders-table-wrap { max-width:calc(100vw - 36px); }
   .site-modal-backdrop { align-items:start; }
   .site-modal { margin:24px auto; max-height:none; }
