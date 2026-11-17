@@ -1738,3 +1738,23 @@ button, input, select, textarea {
   .featured-carousel-track { overflow: visible; }
 }
 .admin-order-lines { margin: 6px 0; padding-left: 18px; font-size: 12px; color: var(--muted); }
+
+
+/* Consistent vector marks instead of emoji-font symbols. */
+.asterisk-mark { display:inline-block; width:24px; height:24px; vertical-align:middle; color:currentColor; }
+.asterisk-mark path { fill:none; stroke:currentColor; stroke-width:3; stroke-linecap:round; }
+.brand-mark { display:inline-block; width:28px; height:28px; vertical-align:middle; }
+.footer-brand-mark { display:inline-flex; vertical-align:middle; margin-left:5px; }
+.site-modal-backdrop { position:fixed; inset:0; z-index:12000; display:grid; place-items:center; padding:18px; background:rgba(31,27,23,.58); }
+.site-modal { position:relative; width:min(560px,100%); max-height:min(88vh,900px); overflow:auto; padding:34px; background:var(--paper,var(--white)); border:1px solid var(--line); box-shadow:0 24px 90px #21170f40; }
+.site-modal h2 { margin:10px 42px 14px 0; font-family:var(--serif); font-size:clamp(26px,5vw,38px); line-height:1.12; }
+.site-modal p { color:var(--muted); line-height:1.65; }
+.site-modal-close { position:absolute; top:12px; right:12px; width:38px; height:38px; border:1px solid var(--line); background:transparent; font-size:25px; line-height:1; }
+.site-modal-done { margin-left:8px; }
+.admin-product-modal { width:min(760px,100%); }
+.admin-product-modal #edit-slot .admin-edit { margin:0; padding:0; border:0; background:transparent; }
+.admin-product-modal #product-edit h3 { display:none; }
+.admin-order-heading { display:flex; align-items:center; justify-content:space-between; gap:14px; }
+.danger-btn { color:#8c3528 !important; border-color:#c58a7b !important; }
+.featured-empty { flex:0 0 auto; padding:30px 24px; color:var(--muted); white-space:nowrap; }
+@media(max-width:650px) { .site-modal { padding:26px 20px; } }
