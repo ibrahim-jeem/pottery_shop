@@ -222,7 +222,7 @@
     const termsLink=$("#open-delivery-terms");
     termsLink?.addEventListener("click",event=>{event.preventDefault();showTermsModal();});
     const payment = $("#payment-method"), note = $("#payment-explainer");
-    payment?.addEventListener("change", () => { note.textContent = payment.value === "cod" ? "Cash on delivery is a request and will be confirmed by the shop." : "Online payment is not connected yet. This records your preferred method only; do not send money until the shop confirms an official payment link."; });
+    payment?.addEventListener("change", () => { note.textContent = payment.value === "cod" ? "Cash on delivery is a request and will be confirmed by the shop." : "The shop will confirm the available payment method and official payment instructions before you pay."; });
     form.addEventListener("submit", event => {
       event.preventDefault();
       if (!form.elements.acceptTerms?.checked) { $("#checkout-feedback").textContent="Please read and accept the delivery terms."; return; }
@@ -244,7 +244,7 @@
         $$("[data-save-price]",root).forEach(button=>button.addEventListener("click",()=>{
           const p=byId(button.dataset.savePrice),row=button.closest("[data-product-row]"),input=$(".admin-price-input",row);
           if(!p||input.value.trim()===""||!Number.isFinite(Number(input.value))||Number(input.value)<0){toast("Enter a valid price in BDT.");input.focus();return;}
-          p.price=Number(input.value);saveProducts();const small=$(".admin-price-cell small",row);small.textContent="Current: "+money(p.price);toast("Price saved on this device.");
+          p.price=Number(input.value);saveProducts();const small=$(".admin-price-cell small",row);small.textContent="Current: "+money(p.price);toast("Price saved.");
         }));
         $$("[data-edit]",root).forEach(button=>button.addEventListener("click",()=>edit(button.dataset.edit)));
       }else{
@@ -284,7 +284,7 @@
       $("#edit-slot").innerHTML='<form class="admin-edit" id="product-edit"><div class="form-row"><label>Product name<input name="name" required maxlength="80" value="'+esc(p.name)+'"></label><label>Category<select name="category"><option value="">Uncategorised</option><option value="tableware">Tableware</option><option value="decor">Decor</option><option value="planters">Planters</option></select></label></div><div class="form-row"><label>Price (BDT)<input name="price" type="number" min="0" step="1" inputmode="numeric" value="'+(p.price==null?"":esc(p.price))+'" placeholder="Leave blank for quote"></label><label>Stock quantity<input name="stock" type="number" min="0" step="1" value="'+(p.stock==null?"":esc(p.stock))+'" placeholder="Optional"></label></div><div class="form-row"><label>Offer price (BDT)<input name="offerPrice" type="number" min="0" step="1" inputmode="numeric" value="'+(p.offerPrice==null?"":esc(p.offerPrice))+'" placeholder="Optional special price"></label><label class="check-line"><input name="bestSeller" type="checkbox" '+(p.bestSeller?"checked":"")+'> Mark as Best Sold</label></div><label>Image path<input name="image" required value="'+esc(p.image)+'"></label><label>Description<textarea name="description" rows="3">'+esc(p.description)+'</textarea></label><label class="check-line"><input name="published" type="checkbox" '+(p.published?"checked":"")+'> Show in shop</label><div class="admin-actions"><button class="btn btn-dark" type="submit">Save product details</button><button class="small-btn" type="button" id="cancel-edit">Cancel</button>'+(existing?'<button class="small-btn" type="button" id="delete-product">Delete product</button>':'')+'</div></form>';
       const form=$("#product-edit");form.elements.category.value=p.category;
       $("#cancel-edit").addEventListener("click",closeProductModal);
-      $("#delete-product")?.addEventListener("click",()=>{if(confirm("Delete this product from this browser catalogue?")){products=products.filter(x=>x.id!==p.id);cart=cart.filter(x=>x.id!==p.id);saveProducts();saveCart();draw();}});
+      $("#delete-product")?.addEventListener("click",()=>{if(confirm("Delete this product from the catalogue?")){products=products.filter(x=>x.id!==p.id);cart=cart.filter(x=>x.id!==p.id);saveProducts();saveCart();draw();}});
       form.addEventListener("submit",event=>{
         event.preventDefault();
         const data=new FormData(form);
@@ -294,7 +294,7 @@
         if(!/^img\/[^\/\\]+\.(jpe?g|png|webp|gif)$/i.test(updated.image)){toast("Image must be a file inside the img folder, for example img/your-photo.jpg.");return;}
         const probe=new Image();
         probe.onerror=()=>toast("That image was not found. Put the file in the img folder first.");
-        probe.onload=()=>{if(existing)Object.assign(existing,updated);else products.unshift(updated);saveProducts();closeProductModal();draw();toast("Product details saved on this device.");};
+        probe.onload=()=>{if(existing)Object.assign(existing,updated);else products.unshift(updated);saveProducts();closeProductModal();draw();toast("Product details saved.");};
         probe.src=updated.image;
       });
     }
