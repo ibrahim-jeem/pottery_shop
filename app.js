@@ -297,7 +297,7 @@
         probe.src=updated.image;
       });
     }
-    $("[data-admin-tab]").forEach(button=>button.addEventListener("click",()=>{tab=button.dataset.adminTab;$$(".admin-tab").forEach(x=>x.classList.toggle("active",x===button));draw();}));
+    $$("[data-admin-tab]").forEach(button=>button.addEventListener("click",()=>{tab=button.dataset.adminTab;$$(".admin-tab").forEach(x=>x.classList.toggle("active",x===button));draw();}));
     draw();
   }
   function cursor() {
