@@ -14,6 +14,7 @@
   const write = (key, value) => localStorage.setItem(key, JSON.stringify(value));
   const esc = value => String(value == null ? "" : value).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
   const money = value => "৳" + Number(value).toLocaleString("en-BD");
+  const brandMark = '<svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect x="1" y="1" width="30" height="30" rx="7" fill="#18b83b"/><path d="M16 6v20M6 16h20M9 9l14 14M23 9 9 23" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/></svg>';
   let products = read(KEY.products, read("ps_products", seed));
   let cart = read(KEY.cart, read("ps_cart", []));
   let activeFilter = "all";
@@ -39,7 +40,7 @@
     $("#site-header").innerHTML = '<header class="site-header"><a class="brand" href="index.html" aria-label="Pottery Shop home"><img src="img/logo.jpg" alt="Pottery Shop" class="site-logo"></a><nav class="nav" id="main-nav" aria-label="Main navigation"><a class="' + active("home") + '" href="index.html">Home</a><a class="' + active("shop") + '" href="shop.html">Shop</a><a class="' + active("story") + '" href="story.html">Our story</a><a class="' + active("wholesale") + '" href="wholesale.html">Wholesale</a></nav><div class="header-actions"><button class="cart-button" id="open-cart" type="button" aria-label="Open shopping bag">Bag <span class="cart-count" id="cart-count">0</span></button><button class="menu-toggle" id="menu-toggle" type="button" aria-label="Toggle navigation" aria-controls="main-nav" aria-expanded="false">☰</button></div></header>';
   }
   function footer() {
-    $("#site-footer").innerHTML = '<footer class="site-footer"><div class="footer-contact-grid"><section class="footer-location"><span class="footer-kicker">FIND US</span><h3>Visit the studio</h3><div class="map-placeholder" role="note" aria-label="Studio location"><span class="map-placeholder-pin">⌖</span><strong>Find the studio</strong><small>Message us on Facebook for the studio address.</small></div><p class="footer-placeholder-note">Studio address: ask us on Facebook</p></section><section class="footer-contact"><span class="footer-kicker">GET IN TOUCH</span><h3>Contact us</h3><p>Questions about a piece, a custom order, or a collaboration? We would love to hear from you.</p><p><strong>Phone / WhatsApp</strong><br><span class="footer-placeholder-note">Message us on Facebook for our contact number</span></p><p><strong>Address</strong><br><span class="footer-placeholder-note">Message us on Facebook for the studio address</span></p><a href="https://www.facebook.com/Potteryshop25" target="_blank" rel="noopener noreferrer">Message us on Facebook ↗</a></section></div><div class="footer-top"><div><div class="footer-brand">Pottery Shop <span style="color:#d59a7b">✳</span></div><p>Thoughtful handmade pottery for everyday rituals. A little story shaped in clay.</p><p>বাংলার মাটি, হাতের ছোঁয়া</p></div><div class="footer-links"><a href="shop.html">Shop</a><a href="story.html">Our story</a><a href="wholesale.html">Wholesale</a><a href="policies.html">Policies</a><a href="https://www.facebook.com/Potteryshop25" target="_blank" rel="noopener noreferrer">Facebook ↗</a></div></div><div class="footer-bottom"><span>© ' + new Date().getFullYear() + ' Pottery Shop. Made with care.</span><a href="policies.html">Delivery, returns &amp; privacy</a></div></footer>';
+    $("#site-footer").innerHTML = '<footer class="site-footer"><div class="footer-contact-grid"><section class="footer-location"><span class="footer-kicker">FIND US</span><h3>Visit the studio</h3><div class="map-placeholder" role="note" aria-label="Studio location"><span class="map-placeholder-pin">⌖</span><strong>Find the studio</strong><small>Message us on Facebook for the studio address.</small></div><p class="footer-placeholder-note">Studio address: ask us on Facebook</p></section><section class="footer-contact"><span class="footer-kicker">GET IN TOUCH</span><h3>Contact us</h3><p>Questions about a piece, a custom order, or a collaboration? We would love to hear from you.</p><p><strong>Phone / WhatsApp</strong><br><span class="footer-placeholder-note">Message us on Facebook for our contact number</span></p><p><strong>Address</strong><br><span class="footer-placeholder-note">Message us on Facebook for the studio address</span></p><a href="https://www.facebook.com/Potteryshop25" target="_blank" rel="noopener noreferrer">Message us on Facebook ↗</a></section></div><div class="footer-top"><div><div class="footer-brand">Pottery Shop <span class="footer-brand-mark">' + brandMark + '</span></div><p>Thoughtful handmade pottery for everyday rituals. A little story shaped in clay.</p><p>বাংলার মাটি, হাতের ছোঁয়া</p></div><div class="footer-links"><a href="shop.html">Shop</a><a href="story.html">Our story</a><a href="wholesale.html">Wholesale</a><a href="policies.html">Policies</a><a href="https://www.facebook.com/Potteryshop25" target="_blank" rel="noopener noreferrer">Facebook ↗</a></div></div><div class="footer-bottom"><span>© ' + new Date().getFullYear() + ' Pottery Shop. Made with care.</span><a href="policies.html">Delivery, returns &amp; privacy</a></div></footer>';
   }
   function shell() {
     header(); footer();
@@ -128,7 +129,9 @@
       ...(offer ? [{ product: offer, tag: "Special Offer", kind: "offer" }] : [])
     ];
     if (!cards.length) {
-      track.innerHTML = '<div class="featured-empty">Our studio favourites are being selected. Check back soon.</div>';
+      const message = "Our studio favourites are being selected. Check back soon.";
+      const emptySequence = '<div class="featured-marquee-seq"><span class="featured-empty">' + message + '</span><span class="featured-empty" aria-hidden="true">' + message + '</span><span class="featured-empty" aria-hidden="true">' + message + '</span></div>';
+      track.innerHTML = '<div class="featured-marquee-group">' + emptySequence + '</div><div class="featured-marquee-group" aria-hidden="true">' + emptySequence + '</div>';
       if (controls) controls.hidden = true;
       return;
     }
@@ -165,6 +168,20 @@
     $("#product-search")?.addEventListener("input", e => renderProducts($("#shop-products"), activeFilter, e.target.value));
     $$("[data-filter]").forEach(button => button.addEventListener("click", () => { $$(".filter").forEach(x => x.classList.remove("active")); button.classList.add("active"); activeFilter = button.dataset.filter; renderProducts($("#shop-products"), activeFilter, $("#product-search")?.value || ""); }));
   }
+  function showNotice(title, message) {
+    document.querySelector("#site-notice-modal")?.remove();
+    const modal = document.createElement("div");
+    modal.id = "site-notice-modal"; modal.className = "site-modal-backdrop";
+    modal.innerHTML = '<section class="site-modal" role="dialog" aria-modal="true" aria-labelledby="site-notice-title"><button class="site-modal-close" type="button" aria-label="Close">×</button><span class="eyebrow">POTTERY SHOP</span><h2 id="site-notice-title">' + esc(title) + '</h2><p>' + esc(message) + '</p><a class="btn btn-outline" href="https://www.facebook.com/Potteryshop25" target="_blank" rel="noopener noreferrer">Contact the shop on Facebook ↗</a><button class="btn btn-dark site-modal-done" type="button">Close</button></section>';
+    document.body.appendChild(modal);
+    const close = () => modal.remove();
+    modal.querySelector(".site-modal-close").addEventListener("click", close);
+    modal.querySelector(".site-modal-done").addEventListener("click", close);
+    modal.addEventListener("click", event => { if (event.target === modal) close(); });
+    modal.querySelector(".site-modal-done").focus();
+    const onKey = event => { if (event.key === "Escape") { close(); document.removeEventListener("keydown", onKey); } };
+    document.addEventListener("keydown", onKey);
+  }
   function wholesale() {
     const form = $("#wholesale-form"); if (!form) return;
     const piece = new URLSearchParams(location.search).get("piece");
@@ -175,7 +192,8 @@
       const entries = read(KEY.enquiries, []);
       entries.unshift({ ...Object.fromEntries(new FormData(form)), id: "ENQ-" + Date.now(), date: new Date().toISOString() });
       write(KEY.enquiries, entries); form.reset();
-      $("#wholesale-feedback").textContent = "Your enquiry is saved on this device only and has not been sent to the shop yet. Please also message us on Facebook.";
+      $("#wholesale-feedback").textContent = "Your request has been saved in this browser preview.";
+      showNotice("Request saved", "Thank you for your enquiry. This preview stores the request on this device only; it has not reached the shop yet. Until the backend is connected, please send the same request through our Facebook page so the shop team can receive it.");
     });
   }
   function checkout() {
@@ -220,18 +238,27 @@
         root.innerHTML=items.length?'<div class="admin-list">'+items.map(item=>{
           if(tab==="orders"){
             const lines=(item.items||[]).map(l=>'<li>'+esc(l.name||l.id)+' × '+Number(l.qty)+(l.unitPrice==null?"":" = "+money(Number(l.unitPrice)*Number(l.qty)))+'</li>').join("");
-            return '<article class="admin-edit"><strong>'+esc(item.id)+'</strong><small>'+new Date(item.date).toLocaleString()+'</small><p>'+esc(item.customer?.name||"")+' · '+esc(item.customer?.phone||"")+'</p><p>'+esc(item.customer?.address||"")+'</p><ul class="admin-order-lines">'+lines+'</ul><b>'+(item.total==null?"Quote required":money(item.total))+' · '+esc(item.status)+'</b><p>Payment: '+esc(PAY_LABEL[item.customer?.payment]||"Not specified")+' · '+esc(item.paymentStatus||"Not paid")+'</p>'+(item.customer?.note?'<p>Note: '+esc(item.customer.note)+'</p>':'')+'</article>';
+            return '<article class="admin-edit"><div class="admin-order-heading"><strong>'+esc(item.id)+'</strong><button class="small-btn danger-btn" type="button" data-delete-order="'+esc(item.id)+'">Delete order</button></div><small>'+new Date(item.date).toLocaleString()+'</small><p>'+esc(item.customer?.name||"")+' · '+esc(item.customer?.phone||"")+'</p><p>'+esc(item.customer?.address||"")+'</p><ul class="admin-order-lines">'+lines+'</ul><b>'+(item.total==null?"Quote required":money(item.total))+' · '+esc(item.status)+'</b><p>Payment: '+esc(PAY_LABEL[item.customer?.payment]||"Not specified")+' · '+esc(item.paymentStatus||"Not paid")+'</p>'+(item.customer?.note?'<p>Note: '+esc(item.customer.note)+'</p>':'')+'</article>';
           }
           return '<article class="admin-edit"><strong>'+esc(item.id||"Enquiry")+'</strong><small>'+new Date(item.date).toLocaleString()+'</small><p>'+esc(item.name||"")+' · '+esc(item.business||"")+' · '+esc(item.phone||"")+' · '+esc(item.email||"")+'</p><p>'+esc(item.type||"")+' · '+esc(item.quantity||"")+'</p><p>'+esc(item.message||"")+'</p></article>';
         }).join("")+'</div>':'<div class="empty-state">No '+(tab==="orders"?"orders":"wholesale enquiries")+' saved in this browser yet.</div>';
+        if(tab==="orders") root.querySelectorAll("[data-delete-order]").forEach(button=>button.addEventListener("click",()=>{if(!confirm("Delete order "+button.dataset.deleteOrder+" from this browser? This cannot be undone."))return;write(KEY.orders,read(KEY.orders,[]).filter(order=>order.id!==button.dataset.deleteOrder));draw();toast("Order deleted from this browser.");}));
       }
     }
     function edit(id){
       const existing=id?byId(id):null;
       const p=existing||{id:"piece-"+Date.now(),name:"",category:"",description:"",image:"img/pottery_shop_1.jpg",price:"",stock:"",published:false};
+      document.querySelector("#product-modal")?.remove();
+      document.body.insertAdjacentHTML("beforeend", '<div class="site-modal-backdrop admin-product-backdrop" id="product-modal"><section class="site-modal admin-product-modal" role="dialog" aria-modal="true" aria-labelledby="product-modal-title"><button class="site-modal-close" type="button" aria-label="Close">×</button><span class="eyebrow">STUDIO WORKSPACE</span><h2 id="product-modal-title">' + (existing?"Edit product details":"Add a product") + '</h2><div id="edit-slot"></div></section></div>');
+      const closeProductModal = () => document.querySelector("#product-modal")?.remove();
+      const modal = document.querySelector("#product-modal");
+      modal.querySelector(".site-modal-close").addEventListener("click",closeProductModal);
+      modal.addEventListener("click",event=>{if(event.target===modal)closeProductModal();});
+      const onModalKey = event=>{if(event.key==="Escape"){closeProductModal();document.removeEventListener("keydown",onModalKey);}};
+      document.addEventListener("keydown",onModalKey);
       $("#edit-slot").innerHTML='<form class="admin-edit" id="product-edit"><h3>'+(existing?"Edit product details":"Add a product")+'</h3><div class="form-row"><label>Product name<input name="name" required maxlength="80" value="'+esc(p.name)+'"></label><label>Category<select name="category"><option value="">Uncategorised</option><option value="tableware">Tableware</option><option value="decor">Decor</option><option value="planters">Planters</option></select></label></div><div class="form-row"><label>Price (BDT)<input name="price" type="number" min="0" step="1" inputmode="numeric" value="'+(p.price==null?"":esc(p.price))+'" placeholder="Leave blank for quote"></label><label>Stock quantity<input name="stock" type="number" min="0" step="1" value="'+(p.stock==null?"":esc(p.stock))+'" placeholder="Optional"></label></div><div class="form-row"><label>Offer price (BDT)<input name="offerPrice" type="number" min="0" step="1" inputmode="numeric" value="'+(p.offerPrice==null?"":esc(p.offerPrice))+'" placeholder="Optional special price"></label><label class="check-line"><input name="bestSeller" type="checkbox" '+(p.bestSeller?"checked":"")+'> Mark as Best Sold</label></div><label>Image path<input name="image" required value="'+esc(p.image)+'"></label><label>Description<textarea name="description" rows="3">'+esc(p.description)+'</textarea></label><label class="check-line"><input name="published" type="checkbox" '+(p.published?"checked":"")+'> Show in shop</label><div class="admin-actions"><button class="btn btn-dark" type="submit">Save product details</button><button class="small-btn" type="button" id="cancel-edit">Cancel</button>'+(existing?'<button class="small-btn" type="button" id="delete-product">Delete product</button>':'')+'</div></form>';
       const form=$("#product-edit");form.elements.category.value=p.category;
-      $("#cancel-edit").addEventListener("click",()=>{$("#edit-slot").innerHTML="";});
+      $("#cancel-edit").addEventListener("click",closeProductModal);
       $("#delete-product")?.addEventListener("click",()=>{if(confirm("Delete this product from this browser catalogue?")){products=products.filter(x=>x.id!==p.id);cart=cart.filter(x=>x.id!==p.id);saveProducts();saveCart();draw();}});
       form.addEventListener("submit",event=>{
         event.preventDefault();
@@ -242,7 +269,7 @@
         if(!/^img\/[^\/\\]+\.(jpe?g|png|webp|gif)$/i.test(updated.image)){toast("Image must be a file inside the img folder, for example img/your-photo.jpg.");return;}
         const probe=new Image();
         probe.onerror=()=>toast("That image was not found. Put the file in the img folder first.");
-        probe.onload=()=>{if(existing)Object.assign(existing,updated);else products.unshift(updated);saveProducts();draw();toast("Product details saved on this device.");};
+        probe.onload=()=>{if(existing)Object.assign(existing,updated);else products.unshift(updated);saveProducts();closeProductModal();draw();toast("Product details saved on this device.");};
         probe.src=updated.image;
       });
     }
