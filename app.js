@@ -2,7 +2,7 @@
   "use strict";
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
-  const KEY = { products: "ps_products_v2", cart: "ps_cart_v2", orders: "ps_orders_v2", enquiries: "ps_enquiries_v2" };
+  const KEY = { products: "ps_products_v2", cart: "ps_cart_v2", orders: "ps_orders_v2", enquiries: "ps_enquiries_v2", policies: "ps_delivery_terms_v1" };
   const PAY_LABEL = { cod: "Cash on delivery (request)", bkash: "bKash", nagad: "Nagad", rocket: "Rocket", card: "Debit / credit card" };
   const seed = Array.from({ length: 21 }, (_, i) => ({
     id: "piece-" + (i + 1), name: "Draft piece " + String(i + 1).padStart(2, "0"),
@@ -15,6 +15,8 @@
   const esc = value => String(value == null ? "" : value).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
   const money = value => "৳" + Number(value).toLocaleString("en-BD");
   const brandMark = '<svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect x="1" y="1" width="30" height="30" rx="7" fill="#18b83b"/><path d="M16 6v20M6 16h20M9 9l14 14M23 9 9 23" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/></svg>';
+  const arrowIcon = '<svg class="inline-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16 16 4M6 4h10v10"/></svg>';
+  const menuIcon = '<svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';
   let products = read(KEY.products, read("ps_products", seed));
   let cart = read(KEY.cart, read("ps_cart", []));
   let activeFilter = "all";
@@ -37,10 +39,10 @@
   function header() {
     const page = document.body.dataset.page || "";
     const active = name => page === name ? "active" : "";
-    $("#site-header").innerHTML = '<header class="site-header"><a class="brand" href="index.html" aria-label="Pottery Shop home"><img src="img/logo.jpg" alt="Pottery Shop" class="site-logo"></a><nav class="nav" id="main-nav" aria-label="Main navigation"><a class="' + active("home") + '" href="index.html">Home</a><a class="' + active("shop") + '" href="shop.html">Shop</a><a class="' + active("story") + '" href="story.html">Our story</a><a class="' + active("wholesale") + '" href="wholesale.html">Wholesale</a></nav><div class="header-actions"><button class="cart-button" id="open-cart" type="button" aria-label="Open shopping bag">Bag <span class="cart-count" id="cart-count">0</span></button><button class="menu-toggle" id="menu-toggle" type="button" aria-label="Toggle navigation" aria-controls="main-nav" aria-expanded="false">☰</button></div></header>';
+    $("#site-header").innerHTML = '<header class="site-header"><a class="brand" href="index.html" aria-label="Pottery Shop home"><img src="img/logo.jpg" alt="Pottery Shop" class="site-logo"></a><nav class="nav" id="main-nav" aria-label="Main navigation"><a class="' + active("home") + '" href="index.html">Home</a><a class="' + active("shop") + '" href="shop.html">Shop</a><a class="' + active("story") + '" href="story.html">Our story</a><a class="' + active("wholesale") + '" href="wholesale.html">Wholesale</a></nav><div class="header-actions"><button class="cart-button" id="open-cart" type="button" aria-label="Open shopping bag">Bag <span class="cart-count" id="cart-count">0</span></button><button class="menu-toggle" id="menu-toggle" type="button" aria-label="Toggle navigation" aria-controls="main-nav" aria-expanded="false">' + menuIcon + '</button></div></header>';
   }
   function footer() {
-    $("#site-footer").innerHTML = '<footer class="site-footer"><div class="footer-contact-grid"><section class="footer-location"><span class="footer-kicker">FIND US</span><h3>Visit the studio</h3><div class="map-placeholder" role="note" aria-label="Studio location"><span class="map-placeholder-pin">⌖</span><strong>Find the studio</strong><small>Message us on Facebook for the studio address.</small></div><p class="footer-placeholder-note">Studio address: ask us on Facebook</p></section><section class="footer-contact"><span class="footer-kicker">GET IN TOUCH</span><h3>Contact us</h3><p>Questions about a piece, a custom order, or a collaboration? We would love to hear from you.</p><p><strong>Phone / WhatsApp</strong><br><span class="footer-placeholder-note">Message us on Facebook for our contact number</span></p><p><strong>Address</strong><br><span class="footer-placeholder-note">Message us on Facebook for the studio address</span></p><a href="https://www.facebook.com/Potteryshop25" target="_blank" rel="noopener noreferrer">Message us on Facebook ↗</a></section></div><div class="footer-top"><div><div class="footer-brand">Pottery Shop <span class="footer-brand-mark">' + brandMark + '</span></div><p>Thoughtful handmade pottery for everyday rituals. A little story shaped in clay.</p><p>বাংলার মাটি, হাতের ছোঁয়া</p></div><div class="footer-links"><a href="shop.html">Shop</a><a href="story.html">Our story</a><a href="wholesale.html">Wholesale</a><a href="policies.html">Policies</a><a href="https://www.facebook.com/Potteryshop25" target="_blank" rel="noopener noreferrer">Facebook ↗</a></div></div><div class="footer-bottom"><span>© ' + new Date().getFullYear() + ' Pottery Shop. Made with care.</span><a href="policies.html">Delivery, returns &amp; privacy</a></div></footer>';
+    $("#site-footer").innerHTML = '<footer class="site-footer"><div class="footer-contact-grid"><section class="footer-location"><span class="footer-kicker">FIND US</span><h3>Visit the studio</h3><div class="map-placeholder" role="note" aria-label="Studio location"><span class="map-placeholder-pin"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.2"/></svg></span><strong>Find the studio</strong><small>Message us on Facebook for the studio address.</small></div><p class="footer-placeholder-note">Studio address: ask us on Facebook</p></section><section class="footer-contact"><span class="footer-kicker">GET IN TOUCH</span><h3>Contact us</h3><p>Questions about a piece, a custom order, or a collaboration? We would love to hear from you.</p><p><strong>Phone / WhatsApp</strong><br><span class="footer-placeholder-note">Message us on Facebook for our contact number</span></p><p><strong>Address</strong><br><span class="footer-placeholder-note">Message us on Facebook for the studio address</span></p><a href="https://www.facebook.com/Potteryshop25" target="_blank" rel="noopener noreferrer">Message us on Facebook ' + arrowIcon + '</a></section></div><div class="footer-top"><div><div class="footer-brand">Pottery Shop <span class="footer-brand-mark">' + brandMark + '</span></div><p>Thoughtful handmade pottery for everyday rituals. A little story shaped in clay.</p><p>বাংলার মাটি, হাতের ছোঁয়া</p></div><div class="footer-links"><a href="shop.html">Shop</a><a href="story.html">Our story</a><a href="wholesale.html">Wholesale</a><a href="policies.html">Policies</a><a href="https://www.facebook.com/Potteryshop25" target="_blank" rel="noopener noreferrer">Facebook ' + arrowIcon + '</a></div></div><div class="footer-bottom"><span>© ' + new Date().getFullYear() + ' Pottery Shop. Made with care.</span><a href="policies.html">Delivery, returns &amp; privacy</a></div></footer>';
   }
   function shell() {
     header(); footer();
@@ -182,6 +184,13 @@
     const onKey = event => { if (event.key === "Escape") { close(); document.removeEventListener("keydown", onKey); } };
     document.addEventListener("keydown", onKey);
   }
+  function showTermsModal() {
+    const policy=read(KEY.policies,{delivery:"Delivery areas, charges and estimated dispatch time will be confirmed by the shop before an order is accepted.",damage:"If an item arrives damaged, contact the shop promptly with photographs of the item and packaging. The shop will review the claim and confirm an appropriate resolution.",warranty:"Handmade pottery is fragile and should be handled with care. No fixed warranty period has been specified; contact the shop about any concern with your item."});
+    document.querySelector("#delivery-terms-modal")?.remove();
+    const modal=document.createElement("div");modal.id="delivery-terms-modal";modal.className="site-modal-backdrop";
+    modal.innerHTML='<section class="site-modal delivery-terms-modal" role="dialog" aria-modal="true" aria-labelledby="delivery-terms-title"><button class="site-modal-close" type="button" aria-label="Close">×</button><span class="eyebrow">BEFORE YOU ORDER</span><h2 id="delivery-terms-title">Delivery & product care</h2><h3>Delivery and dispatch</h3><p>'+esc(policy.delivery)+'</p><h3>Damaged items and returns</h3><p>'+esc(policy.damage)+'</p><h3>Warranty and care</h3><p>'+esc(policy.warranty)+'</p><button class="btn btn-dark site-modal-done" type="button">Close</button></section>';
+    document.body.appendChild(modal);const close=()=>modal.remove();modal.querySelector(".site-modal-close").addEventListener("click",close);modal.querySelector(".site-modal-done").addEventListener("click",close);modal.addEventListener("click",e=>{if(e.target===modal)close();});
+  }
   function wholesale() {
     const form = $("#wholesale-form"); if (!form) return;
     const piece = new URLSearchParams(location.search).get("piece");
@@ -189,11 +198,13 @@
     form.addEventListener("submit", event => {
       event.preventDefault();
       if (!validBDPhone(form.elements.phone.value)) { $("#wholesale-feedback").textContent = "Please enter a valid Bangladesh mobile number, for example 017XXXXXXXX."; form.elements.phone.focus(); return; }
-      const entries = read(KEY.enquiries, []);
-      entries.unshift({ ...Object.fromEntries(new FormData(form)), id: "ENQ-" + Date.now(), date: new Date().toISOString() });
-      write(KEY.enquiries, entries); form.reset();
-      $("#wholesale-feedback").textContent = "Your request has been saved in this browser preview.";
-      showNotice("Request saved", "Thank you for your enquiry. This preview stores the request on this device only; it has not reached the shop yet. Until the backend is connected, please send the same request through our Facebook page so the shop team can receive it.");
+      const enquiryData=Object.fromEntries(new FormData(form));
+      const enquiry={...enquiryData,id:"ENQ-"+Date.now(),date:new Date().toISOString()};
+      const entries=read(KEY.enquiries,[]);entries.unshift(enquiry);write(KEY.enquiries,entries);
+      const orderLike={id:"PS-"+Date.now(),requestType:"Wholesale",date:enquiry.date,customer:{name:enquiry.name,phone:enquiry.phone,email:enquiry.email,address:"Not provided",payment:"",note:enquiry.message},items:[{name:enquiry.type+" · "+(enquiry.quantity||"Quantity not specified"),qty:1}],total:null,status:"Wholesale enquiry",paymentStatus:"Not applicable"};
+      const orderList=read(KEY.orders,[]);orderList.unshift(orderLike);write(KEY.orders,orderList);form.reset();
+      $("#wholesale-feedback").textContent = "Thank you. Your request has been recorded. Please contact us on Facebook if you need to confirm it.";
+      showNotice("Thank you for your enquiry", "Your request details have been recorded. Please contact us through our Facebook page if you need an immediate confirmation.");
     });
   }
   function checkout() {
@@ -208,15 +219,18 @@
       if (cart.length) target.insertAdjacentHTML("beforeend", '<h3 style="display:flex;justify-content:space-between;margin-top:25px">Subtotal <span>' + (needsQuote() ? "To be confirmed" : money(cartTotal())) + '</span></h3><p class="form-note">Delivery charge and final availability will be confirmed before dispatch.</p>');
     };
     draw();
+    const termsLink=$("#open-delivery-terms");
+    termsLink?.addEventListener("click",event=>{event.preventDefault();showTermsModal();});
     const payment = $("#payment-method"), note = $("#payment-explainer");
     payment?.addEventListener("change", () => { note.textContent = payment.value === "cod" ? "Cash on delivery is a request and will be confirmed by the shop." : "Online payment is not connected yet. This records your preferred method only; do not send money until the shop confirms an official payment link."; });
     form.addEventListener("submit", event => {
       event.preventDefault();
+      if (!form.elements.acceptTerms?.checked) { $("#checkout-feedback").textContent="Please read and accept the delivery terms."; return; }
       if (!cart.length) { $("#checkout-feedback").textContent = "Your bag is empty."; return; }
       if (!validBDPhone(form.elements.phone.value)) { $("#checkout-feedback").textContent = "Please enter a valid Bangladesh mobile number, for example 017XXXXXXXX."; form.elements.phone.focus(); return; }
-      const order = { id: "PS-" + Date.now(), items: cart.map(x => { const p = byId(x.id); return { id: x.id, name: p ? p.name : x.id, qty: x.qty, unitPrice: unitPrice(p) }; }), customer: Object.fromEntries(new FormData(form)), total: needsQuote() ? null : cartTotal(), paymentStatus: "Not paid", status: "Pending shop confirmation", date: new Date().toISOString() };
+      const order = { id: "PS-" + Date.now(), requestType: "Normal", items: cart.map(x => { const p = byId(x.id); return { id: x.id, name: p ? p.name : x.id, qty: x.qty, unitPrice: unitPrice(p) }; }), customer: Object.fromEntries(new FormData(form)), total: needsQuote() ? null : cartTotal(), paymentStatus: "Not paid", status: "Pending shop confirmation", date: new Date().toISOString() };
       const orders = read(KEY.orders, []); orders.unshift(order); write(KEY.orders, orders);
-      cart = []; saveCart(); target.innerHTML = '<div class="empty-state"><h2>Your order request is saved on this device.</h2><p>Reference: <strong>' + esc(order.id) + '</strong></p><p>It has not been sent to the shop yet, and no payment has been taken. To confirm, message the shop on its official Facebook page with this reference.</p><a class="btn btn-dark" href="index.html">Back to home</a></div>';
+      cart = []; saveCart(); target.innerHTML = '<div class="empty-state"><h2>Thank you for your order request.</h2><p>Reference: <strong>' + esc(order.id) + '</strong></p><p>Please contact the shop through Facebook to confirm availability, delivery charge and payment.</p><a class="btn btn-dark" href="index.html">Back to home</a></div>';
       form.hidden = true;
     });
   }
@@ -234,15 +248,26 @@
         }));
         $$("[data-edit]",root).forEach(button=>button.addEventListener("click",()=>edit(button.dataset.edit)));
       }else{
+        if(tab==="terms"){
+          const policy=read(KEY.policies,{delivery:"Delivery areas, charges and estimated dispatch time will be confirmed by the shop before an order is accepted.",damage:"If an item arrives damaged, contact the shop promptly with photographs of the item and packaging. The shop will review the claim and confirm an appropriate resolution.",warranty:"Handmade pottery is fragile and should be handled with care. No fixed warranty period has been specified; contact the shop about any concern with your item."});
+          root.innerHTML='<form class="admin-edit policy-admin-form" id="policy-admin-form"><h2>Delivery, damage & warranty terms</h2><p>These terms appear in the customer checkout pop-up. Review and save the wording before accepting orders.</p><label>Delivery and dispatch<textarea name="delivery" rows="4" required>'+esc(policy.delivery)+'</textarea></label><label>Damaged item and return policy<textarea name="damage" rows="5" required>'+esc(policy.damage)+'</textarea></label><label>Warranty and care<textarea name="warranty" rows="4" required>'+esc(policy.warranty)+'</textarea></label><button class="btn btn-dark" type="submit">Save delivery terms</button></form>';
+          $("#policy-admin-form").addEventListener("submit",event=>{event.preventDefault();const data=new FormData(event.currentTarget);write(KEY.policies,{delivery:String(data.get("delivery")).trim(),damage:String(data.get("damage")).trim(),warranty:String(data.get("warranty")).trim()});toast("Delivery terms saved.");});
+          return;
+        }
         const items=read(tab==="orders"?KEY.orders:KEY.enquiries,[]);
-        root.innerHTML=items.length?'<div class="admin-list">'+items.map(item=>{
-          if(tab==="orders"){
-            const lines=(item.items||[]).map(l=>'<li>'+esc(l.name||l.id)+' × '+Number(l.qty)+(l.unitPrice==null?"":" = "+money(Number(l.unitPrice)*Number(l.qty)))+'</li>').join("");
-            return '<article class="admin-edit"><div class="admin-order-heading"><strong>'+esc(item.id)+'</strong><button class="small-btn danger-btn" type="button" data-delete-order="'+esc(item.id)+'">Delete order</button></div><small>'+new Date(item.date).toLocaleString()+'</small><p>'+esc(item.customer?.name||"")+' · '+esc(item.customer?.phone||"")+'</p><p>'+esc(item.customer?.address||"")+'</p><ul class="admin-order-lines">'+lines+'</ul><b>'+(item.total==null?"Quote required":money(item.total))+' · '+esc(item.status)+'</b><p>Payment: '+esc(PAY_LABEL[item.customer?.payment]||"Not specified")+' · '+esc(item.paymentStatus||"Not paid")+'</p>'+(item.customer?.note?'<p>Note: '+esc(item.customer.note)+'</p>':'')+'</article>';
-          }
-          return '<article class="admin-edit"><strong>'+esc(item.id||"Enquiry")+'</strong><small>'+new Date(item.date).toLocaleString()+'</small><p>'+esc(item.name||"")+' · '+esc(item.business||"")+' · '+esc(item.phone||"")+' · '+esc(item.email||"")+'</p><p>'+esc(item.type||"")+' · '+esc(item.quantity||"")+'</p><p>'+esc(item.message||"")+'</p></article>';
-        }).join("")+'</div>':'<div class="empty-state">No '+(tab==="orders"?"orders":"wholesale enquiries")+' saved in this browser yet.</div>';
-        if(tab==="orders") root.querySelectorAll("[data-delete-order]").forEach(button=>button.addEventListener("click",()=>{if(!confirm("Delete order "+button.dataset.deleteOrder+" from this browser? This cannot be undone."))return;write(KEY.orders,read(KEY.orders,[]).filter(order=>order.id!==button.dataset.deleteOrder));draw();toast("Order deleted from this browser.");}));
+        if(tab==="orders"){
+          const rows=items.map(item=>{
+            const productNames=(item.items||[]).map(x=>esc(x.name||x.id)).join(", ")||"—";
+            const quantity=(item.items||[]).reduce((sum,x)=>sum+Number(x.qty||0),0);
+            const type=item.requestType||"Normal";
+            const bulk=type==="Wholesale"?"wholesale":quantity>=10?"bulk":"normal";
+            return '<tr class="order-row '+bulk+'"><td>'+esc(item.id)+'</td><td>'+new Date(item.date).toLocaleString()+'</td><td>'+esc(item.customer?.name||"")+'</td><td>'+esc(item.customer?.phone||"")+'</td><td>'+esc(item.customer?.email||"")+'</td><td>'+esc(item.customer?.address||"")+'</td><td>'+productNames+'</td><td>'+quantity+'</td><td><span class="order-type '+bulk+'">'+(type==="Wholesale"?"Wholesale":quantity>=10?"Normal · bulk":"Normal")+'</span></td><td>'+esc(PAY_LABEL[item.customer?.payment]||"Not specified")+'</td><td>'+esc(item.status||"Pending")+'</td><td>'+esc(item.customer?.note||"")+'</td><td><button class="small-btn danger-btn" type="button" data-delete-order="'+esc(item.id)+'">Delete</button></td></tr>';
+          }).join("");
+          root.innerHTML='<div class="orders-table-wrap"><table class="orders-table"><thead><tr><th>PS#</th><th>Date & Time</th><th>Name</th><th>Phone #</th><th>Email</th><th>Address</th><th>Product Name</th><th>Quantity</th><th>Request Type</th><th>Payment Method</th><th>Status</th><th>Note</th><th>Action</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+(items.length?"":'<div class="empty-state">No orders received yet.</div>');
+          root.querySelectorAll("[data-delete-order]").forEach(button=>button.addEventListener("click",()=>{if(!confirm("Delete order "+button.dataset.deleteOrder+"? This cannot be undone."))return;write(KEY.orders,read(KEY.orders,[]).filter(order=>order.id!==button.dataset.deleteOrder));draw();toast("Order deleted.");}));
+        }else{
+          root.innerHTML=items.length?'<div class="admin-list">'+items.map(item=>'<article class="admin-edit"><strong>'+esc(item.id||"Enquiry")+'</strong><small>'+new Date(item.date).toLocaleString()+'</small><p>'+esc(item.name||"")+' · '+esc(item.business||"")+' · '+esc(item.phone||"")+' · '+esc(item.email||"")+'</p><p>'+esc(item.type||"")+' · '+esc(item.quantity||"")+'</p><p>'+esc(item.message||"")+'</p></article>').join("")+'</div>':'<div class="empty-state">No wholesale enquiries yet.</div>';
+        }
       }
     }
     function edit(id){
@@ -273,7 +298,7 @@
         probe.src=updated.image;
       });
     }
-    $$("[data-admin-tab]").forEach(button=>button.addEventListener("click",()=>{tab=button.dataset.adminTab;$$(".admin-tab").forEach(x=>x.classList.toggle("active",x===button));draw();}));
+    $("[data-admin-tab]").forEach(button=>button.addEventListener("click",()=>{tab=button.dataset.adminTab;$(".admin-tab").forEach(x=>x.classList.toggle("active",x===button));draw();}));
     draw();
   }
   function cursor() {
