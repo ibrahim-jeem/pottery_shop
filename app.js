@@ -77,7 +77,7 @@
   function card(product) {
     const unit = unitPrice(product);
     const priceLabel = unit === null ? "Price on request" : money(unit);
-    return '<article class="product-card"><div class="product-image"><img src="' + esc(product.image) + '" alt="' + esc(product.name) + '" loading="lazy">' + (product.category ? '<span class="product-tag">' + esc(product.category) + '</span>' : '') + '<span class="product-price-tag">' + priceLabel + '</span></div><div class="product-info"><div><h3>' + esc(product.name) + '</h3><p>' + esc(product.description || "A handmade piece from our collection.") + '</p><button class="product-cta" type="button" data-add="' + esc(product.id) + '">Add to bag →</button> <button class="product-cta" type="button" data-enquire="' + esc(product.id) + '">Ask a question</button></div></div></article>';
+    return '<article class="product-card"><div class="product-image"><img src="' + esc(product.image) + '" alt="' + esc(product.name) + '" loading="lazy">' + (product.category ? '<span class="product-tag">' + esc(product.category) + '</span>' : '') + '<span class="product-price-tag">' + priceLabel + '</span></div><div class="product-info"><div><h3>' + esc(product.name) + '</h3><p>' + esc(product.description || "A handmade piece from our collection.") + '</p><button class="product-cta" type="button" data-add="' + esc(product.id) + '">Add to bag '+ arrowIcon + '</button> <button class="product-cta" type="button" data-enquire="' + esc(product.id) + '">Ask a question</button></div></div></article>';
   }
   function renderProducts(target, category, query) {
     if (!target) return;
@@ -101,7 +101,7 @@
       const p = byId(item.id);
       return '<div class="cart-item"><img src="' + esc(p.image) + '" alt=""><div><strong>' + esc(p.name) + '</strong><small>' + (unitPrice(p) === null ? "Price to be confirmed" : money(unitPrice(p))) + '</small><div class="qty-controls"><button type="button" data-qty="' + esc(p.id) + '" data-step="-1" aria-label="Decrease quantity">−</button><span>' + item.qty + '</span><button type="button" data-qty="' + esc(p.id) + '" data-step="1" aria-label="Increase quantity">+</button></div></div><button class="small-btn" type="button" data-remove="' + esc(p.id) + '">Remove</button></div>';
     }).join("") || '<div class="empty-state">Your bag is waiting for something lovely.</div>';
-    summary.innerHTML = cart.length ? '<div class="cart-total"><span>Subtotal</span><span>' + (needsQuote() ? "To be confirmed" : money(cartTotal())) + '</span></div><a class="btn btn-dark" style="width:100%" href="checkout.html">Continue to checkout →</a><p class="form-note">Final delivery charge and availability are confirmed by our team.</p>' : "";
+    summary.innerHTML = cart.length ? '<div class="cart-total"><span>Subtotal</span><span>' + (needsQuote() ? "To be confirmed" : money(cartTotal())) + '</span></div><a class="btn btn-dark" style="width:100%" href="checkout.html">Continue to checkout '+ arrowIcon + '</a><p class="form-note">Final delivery charge and availability are confirmed by our team.</p>' : "";
     $$("[data-qty]").forEach(button => button.addEventListener("click", () => {
       const item = cart.find(x => x.id === button.dataset.qty); if (!item) return;
       const step = Number(button.dataset.step), max = stockOf(byId(item.id));
@@ -174,7 +174,7 @@
     document.querySelector("#site-notice-modal")?.remove();
     const modal = document.createElement("div");
     modal.id = "site-notice-modal"; modal.className = "site-modal-backdrop";
-    modal.innerHTML = '<section class="site-modal" role="dialog" aria-modal="true" aria-labelledby="site-notice-title"><button class="site-modal-close" type="button" aria-label="Close">×</button><span class="eyebrow">POTTERY SHOP</span><h2 id="site-notice-title">' + esc(title) + '</h2><p>' + esc(message) + '</p><a class="btn btn-outline" href="https://www.facebook.com/Potteryshop25" target="_blank" rel="noopener noreferrer">Contact the shop on Facebook ↗</a><button class="btn btn-dark site-modal-done" type="button">Close</button></section>';
+    modal.innerHTML = '<section class="site-modal" role="dialog" aria-modal="true" aria-labelledby="site-notice-title"><button class="site-modal-close" type="button" aria-label="Close">×</button><span class="eyebrow">POTTERY SHOP</span><h2 id="site-notice-title">' + esc(title) + '</h2><p>' + esc(message) + '</p><a class="btn btn-outline" href="https://www.facebook.com/Potteryshop25" target="_blank" rel="noopener noreferrer">Contact the shop on Facebook '+ arrowIcon + '</a><button class="btn btn-dark site-modal-done" type="button">Close</button></section>';
     document.body.appendChild(modal);
     const close = () => modal.remove();
     modal.querySelector(".site-modal-close").addEventListener("click", close);
@@ -201,7 +201,7 @@
       const enquiryData=Object.fromEntries(new FormData(form));
       const enquiry={...enquiryData,id:"ENQ-"+Date.now(),date:new Date().toISOString()};
       const entries=read(KEY.enquiries,[]);entries.unshift(enquiry);write(KEY.enquiries,entries);
-      const orderLike={id:"PS-"+Date.now(),requestType:"Wholesale",date:enquiry.date,customer:{name:enquiry.name,phone:enquiry.phone,email:enquiry.email,address:"Not provided",payment:"",note:enquiry.message},items:[{name:enquiry.type+" · "+(enquiry.quantity||"Quantity not specified"),qty:1}],total:null,status:"Wholesale enquiry",paymentStatus:"Not applicable"};
+      const orderLike={id:"PS-"+Date.now(),requestType:"Wholesale",date:enquiry.date,customer:{name:enquiry.name,phone:enquiry.phone,email:enquiry.email,address:"Not provided",payment:"",note:enquiry.message},items:[{name:enquiry.type,qty:Math.max(1,Number.parseInt(enquiry.quantity,10)||1)}],total:null,status:"Wholesale enquiry",paymentStatus:"Not applicable"};
       const orderList=read(KEY.orders,[]);orderList.unshift(orderLike);write(KEY.orders,orderList);form.reset();
       $("#wholesale-feedback").textContent = "Thank you. Your request has been recorded. Please contact us on Facebook if you need to confirm it.";
       showNotice("Thank you for your enquiry", "Your request details have been recorded. Please contact us through our Facebook page if you need an immediate confirmation.");
@@ -215,7 +215,7 @@
         const p = byId(item.id); if (!p) return "";
         const unit = unitPrice(p);
         return '<div class="checkout-line"><img src="' + esc(p.image) + '" alt=""><div><strong>' + esc(p.name) + '</strong><small>' + item.qty + " × " + (unit === null ? "Price on request" : money(unit)) + '</small></div><b>' + (unit === null ? "—" : money(unit * item.qty)) + '</b></div>';
-      }).join("") || '<div class="empty-state">Your bag is empty. <a href="shop.html">Browse the shop →</a></div>';
+      }).join("") || '<div class="empty-state">Your bag is empty. <a href="shop.html">Browse the shop '+ arrowIcon + '</a></div>';
       if (cart.length) target.insertAdjacentHTML("beforeend", '<h3 style="display:flex;justify-content:space-between;margin-top:25px">Subtotal <span>' + (needsQuote() ? "To be confirmed" : money(cartTotal())) + '</span></h3><p class="form-note">Delivery charge and final availability will be confirmed before dispatch.</p>');
     };
     draw();
